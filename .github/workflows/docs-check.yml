@@ -1,0 +1,27 @@
+name: Docs Structure Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check docs folder exists
+        run: test -d docs
+
+      - name: Check required files exist
+        run: |
+          test -f docs/ERD.png
+          test -f docs/API_Endpoint_Table.pdf
+          test -f docs/database_script.sql
+
+      - name: Check README exists
+        run: test -f README.md
