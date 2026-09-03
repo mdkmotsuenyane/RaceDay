@@ -19,9 +19,9 @@ jobs:
 
       - name: Check required files exist
         run: |
-          test -f docs/ERD.png
-          test -f docs/API_Endpoint_Table.pdf
-          test -f docs/database_script.sql
+          test -f docs/RaceDayERD.png
+          test -f docs/API_Plan.pdf
+          test -f docs/RaceDayDB.sql
 
       - name: Check README exists
         run: test -f README.md
