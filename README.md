@@ -17,7 +17,7 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 
 ---
 
-## Development Status
+## 🏗️Development Status
 
 | Component | Status |
 | :--- | :---: |
@@ -45,7 +45,7 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 
 ---
 
-## Technology Stack
+## 💻Technology Stack
 
 | Component | Technology |
 | :--- | :--- |
@@ -167,7 +167,7 @@ The core entities are:
 RaceDay/
 ├── .github/
 │   └── workflows/        # CI workflows (e.g. docs-check.yml)
-├── docs/                 # Planning artifacts: API_Plan.pdf, RaceDayERD.png
+├── docs/                 # Planning artifacts: API_Plan.pdf, RaceDayERD.png, RaceDayDB.sql
 └── README.md
 ```
 ## ⚙️ Continuous Integration
