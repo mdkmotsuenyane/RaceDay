@@ -31,7 +31,7 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 
 ---
 
-## Features (Planned)
+## 🔥Features Planned
 
 - **Authentication & Authorisation** – JWT‑based Register/Login for Organisers and Participants.
 - **User Profiles** – Unified profile management for both roles.
@@ -128,7 +128,7 @@ All seeded users share the same password for testing purposes:
 
 ---
 
-## API Endpoint Plan
+## 📃API Endpoint Plan
 
 The complete API endpoint plan (39 endpoints) is documented in the [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf) file. It includes:
 
@@ -159,7 +159,7 @@ The core entities are:
 
 ---
 
-## Project Structure
+## 📁Project Structure
 
 ```
 RaceDay/
@@ -181,7 +181,7 @@ RaceDay/
 
 ---
 
-## Next Milestones
+## ⏭️Next Milestones
 
 1. Implement JWT Authentication.
 2. Build all controllers matching the API plan.
@@ -191,13 +191,13 @@ RaceDay/
 
 ---
 
-## License
+## 📃License
 
 This project is built for educational purposes as part of the PROG6212 module for Rosebank International.
 
 ---
 
-## Contributors
+## ✍🏾Contributors
 
 - Mokadi Motsuenyane – ST10480772 Group 3
 
