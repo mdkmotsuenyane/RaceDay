@@ -13,6 +13,8 @@ From the iconic **Comrades Marathon** and **Two Oceans Marathon** to the **Cape 
 
 This repository contains the **ASP.NET Core Web API** back‑end, built with **Entity Framework Core** and **SQL Server**. The front‑end (MVC / SPA) will be built in a later phase.
 
+▶️ **Demo Video:** [Watch on YouTube](https://youtu.be/i0hwWwrlrA4)
+
 ---
 
 ## Development Status
