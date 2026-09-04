@@ -145,7 +145,7 @@ The complete API endpoint plan (39 endpoints) is documented in the [`/docs/API_P
 
 ## Database Schema (ERD)
 
-The Entity Relationship Diagram is available at [`/docs/ERD.png`](./docs/RaceDayERD.png).
+The Entity Relationship Diagram is available at [`/docs/RaceDayERD.png`](./docs/RaceDayERD.png).
 
 The core entities are:
 
