@@ -70,7 +70,7 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/RaceDay.git
+git clone https://github.com/mdkmotsuenyane/RaceDay.git
 cd RaceDay
 ```
 
