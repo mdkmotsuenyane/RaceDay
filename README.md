@@ -168,7 +168,22 @@ RaceDay/
 ├── docs/                 # Planning artifacts: API_Plan.pdf, RaceDayERD.png
 └── README.md
 ```
-
+## ⚙️ Continuous Integration
+ 
+A `docs-check.yml` GitHub Actions workflow runs on every push to `main`, verifying that the project's documentation stays in sync with the repo.
+ 
+![docs-check workflow passing](./docs/screenshots/ci-success.png)
+ 
+---
+ 
+## Known Limitations (Work in Progress)
+ 
+- ❌ Authentication (JWT) not yet implemented.
+- ❌ Controllers not yet coded – only endpoint plan and database are complete.
+- ❌ No front‑end application yet.
+- ❌ No containerisation or deployment configuration.
+- ✅ Database schema and seed data are complete and stable.
+---
 ---
 
 ## Known Limitations (Work in Progress)
