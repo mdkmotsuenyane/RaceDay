@@ -1,4 +1,4 @@
-# RaceDay API
+# RaceDay 
 
 > **🚧 WORK IN PROGRESS – ACADEMIC PROJECT**  
 > This project is currently in active development as part of the PROG6212 module. It is not yet deployed to production. Features, endpoints, and schema are subject to change until final submission.
