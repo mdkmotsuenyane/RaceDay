@@ -162,15 +162,11 @@ The core entities are:
 ## Project Structure
 
 ```
-RaceDay.Api/
-├── Controllers/          # API Controllers (to be added)
-├── Data/                 # AppDbContext
-├── Models/               # Entity Framework models
-│   └── DTOs/             # Request/Response DTOs
-├── Migrations/           # EF Core migrations (auto-generated)
-├── Program.cs            # Application entry point
-├── appsettings.json      # Configuration
-└── RaceDayDB.sql         # Database schema + seed data
+RaceDay/
+├── .github/
+│   └── workflows/        # CI workflows (e.g. docs-check.yml)
+├── docs/                 # Planning artifacts: API_Plan.pdf, RaceDayERD.png
+└── README.md
 ```
 
 ---
