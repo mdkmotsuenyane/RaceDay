@@ -130,7 +130,7 @@ All seeded users share the same password for testing purposes:
 
 ## API Endpoint Plan
 
-The complete API endpoint plan (39 endpoints) is documented in the [`/docs/API_Plan.md`](./docs/API_Plan.pdf) file. It includes:
+The complete API endpoint plan (39 endpoints) is documented in the [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf) file. It includes:
 
 - Authentication (Register, Login, Refresh)
 - User Profiles
