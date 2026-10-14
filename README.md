@@ -11,50 +11,56 @@ RaceDay is a full‑stack event management platform designed specifically for th
 
 From the iconic **Comrades Marathon** and **Two Oceans Marathon** to the **Cape Town Cycle Tour** and **Soweto Marathon**, the platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter races, track their personal performance history, and prepare for race day using live weather and route information.
 
-This repository contains the **ASP.NET Core Web API** back‑end, built with **Entity Framework Core** and **SQL Server**. The front‑end (MVC / SPA) will be built in a later phase.
+This repository contains the **ASP.NET Core Web API** back‑end, built with **Entity Framework Core** and **SQL Server**. The front‑end (MVC) will be built in a later phase.
 
 ▶️ **Demo Video:** [Watch on YouTube](https://youtu.be/i0hwWwrlrA4)
 
 ---
 
-## 🏗️Development Status
+## 🏗️ Development Status
 
 | Component | Status |
 | :--- | :---: |
 | Database Design (SQL) | ✅ Complete |
 | ERD | ✅ Complete |
 | API Endpoint Plan | ✅ Complete |
-| Authentication (JWT) | ⏳ Planned |
-| Controllers Implementation | ⏳ In Progress |
-| Swagger Documentation | ⏳ In Progress |
+| Entity Models (EF Core) | ✅ Complete |
+| Database Migrations | ✅ Complete |
+| Authentication (JWT) | ✅ Complete |
+| Controllers Implementation | ✅ Complete |
+| Swagger Documentation | ✅ Complete |
+| Unit Tests | ⏳ In Progress |
+| CI/CD (GitHub Actions) | ⏳ In Progress |
 | Front‑end Integration | ⏳ Future Phase |
 | Containerisation (Docker) | ⏳ Future Phase |
 | Cloud Deployment | ⏳ Future Phase |
 
 ---
 
-## 🔥Features Planned
+## 🔥 Features Implemented
 
-- **Authentication & Authorisation** – JWT‑based Register/Login for Organisers and Participants.
-- **User Profiles** – Unified profile management for both roles.
+- **Authentication & Authorisation** – JWT‑based Register/Login/Refresh for Organisers and Participants.
+- **User Profiles** – Unified profile management for both roles via `GET/PUT /api/v1/users/me`.
 - **Event Management** – Full CRUD for events, including race day details (weather, route, maps).
-- **Category Management** – Create categories per event (e.g., "Men Open", "Ultra Marathon") with age/gender restrictions.
+- **Category Management** – Create categories per event (e.g. "Men Open", "Ultra Marathon") with age/gender restrictions.
 - **Registration (Entries)** – Participants can enter events, with status tracking (Pending/Confirmed/Cancelled).
 - **Results** – Organisers can upload results (finish times, positions, chip/gun times) and participants can view their performance.
 - **Race Day Preparation** – Weather forecasts and route information integrated directly into event details.
 
 ---
 
-## 💻Technology Stack
+## 💻 Technology Stack
 
 | Component | Technology |
 | :--- | :--- |
-| **Framework** | .NET 8 (LTS) |
+| **Framework** | .NET 10 (LTS) |
 | **API Architecture** | ASP.NET Core Web API (RESTful) |
-| **ORM** | Entity Framework Core |
-| **Database** | Microsoft SQL Server |
-| **Authentication** | JWT (JSON Web Tokens) – Planned |
-| **API Documentation** | Swagger / OpenAPI |
+| **ORM** | Entity Framework Core 10 |
+| **Database** | Microsoft SQL Server (LocalDB for dev) |
+| **Authentication** | JWT (JSON Web Tokens) |
+| **API Documentation** | Swagger / OpenAPI (Swashbuckle) |
+| **Password Hashing** | BCrypt.Net |
+| **Unit Testing** | xUnit (planned) |
 | **Containerisation** | Docker (Future) |
 | **Cloud** | Azure / AWS compatible (Future) |
 
@@ -65,158 +71,12 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 ### Prerequisites
 
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) (with ASP.NET and web development workload)
-- [.NET 8 SDK](https://dotnet.microsoft.com/download)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (Developer or Express edition)
-- [SQL Server Management Studio (SSMS)](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [SQL Server Express LocalDB](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) (installed with Visual Studio's ASP.NET workload)
+- [SQL Server Object Explorer](https://learn.microsoft.com/en-us/sql/ssms/) (built into Visual Studio)
 
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/mdkmotsuenyane/RaceDay.git
 cd RaceDay
-```
-
-### 2. Set Up the Database
-
-**Recommended:** Run the `RaceDayDB.sql` script located in the project root.
-
-1. Open **SSMS** and connect to your local SQL Server instance.
-2. Open `RaceDayDB.sql` and execute the entire script. This will:
-   - Create the `RaceDayDB` database.
-   - Create all tables (`User`, `Organiser`, `Participant`, `Event`, `Category`, `Entry`, `Result`).
-   - Seed the database with test data (4 Organisers, 8 Participants, 4 Events, 8 Categories, 10 Entries, 5 Results).
-
-> **Note:** The SQL script is the single source of truth for the schema and seed data during development.
-
-### 3. Configure the Connection String
-
-Open `appsettings.json` and update the `DefaultConnection` to point to your SQL Server instance:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=RaceDayDB;Trusted_Connection=True;TrustServerCertificate=True;"
-  },
-  "AllowedHosts": "*"
-}
-```
-
-### 4. Restore Packages & Build
-
-```bash
-dotnet restore
-dotnet build
-```
-
-### 5. Run the API Locally
-
-Press **F5** in Visual Studio or run:
-
-```bash
-dotnet run
-```
-
-The API will launch, and **Swagger** will open automatically at `https://localhost:{port}/swagger` (if configured) for testing endpoints.
-
-> **Important:** Authentication is not yet implemented – endpoints are currently unprotected for local development. JWT will be added in the next milestone.
-
----
-
-## Test Data Credentials (For Future Auth Testing)
-
-All seeded users share the same password for testing purposes:
-
-> **Password:** `Password123`
-
----
-
-## 📃API Endpoint Plan
-
-The complete API endpoint plan (39 endpoints) is documented in the [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf) file. It includes:
-
-- Authentication (Register, Login, Refresh)
-- User Profiles
-- Organisers CRUD
-- Participants CRUD
-- Events CRUD (including Weather & Route sub‑endpoints)
-- Categories CRUD
-- Entries (Registrations) CRUD
-- Results CRUD
-
----
-
-## Database Schema (ERD)
-
-The Entity Relationship Diagram is available at [`/docs/RaceDayERD.png`](./docs/RaceDayERD.png).
-
-The core entities are:
-
-- **User** – Authentication and base profile (linked 1‑to‑1 to Organiser or Participant).
-- **Organiser** – Creates and manages Events.
-- **Participant** – Enters Events via Entries.
-- **Event** – Contains weather and route details for race day prep.
-- **Category** – Distances, age groups, and gender restrictions per Event.
-- **Entry** – Junction table linking Participants to Events/Categories.
-- **Result** – Tied to an Entry for finish times and positions.
-
----
-
-## 📁Project Structure
-
-```
-RaceDay/
-├── .github/
-│   └── workflows/        # CI workflows (e.g. docs-check.yml)
-├── docs/                 # Planning artifacts: API_Plan.pdf, RaceDayERD.png, RaceDayDB.sql
-└── README.md
-```
-## ⚙️ Continuous Integration
- 
-A `docs-check.yml` GitHub Actions workflow runs on every push to `main`, verifying that the project's documentation stays in sync with the repo.
- 
-![docs-check workflow passing](./docs/screenshots/ci-success.png)
- 
----
- 
-## Known Limitations (Work in Progress)
- 
-- ❌ Authentication (JWT) not yet implemented.
-- ❌ Controllers not yet coded – only endpoint plan and database are complete.
-- ❌ No front‑end application yet.
-- ❌ No containerisation or deployment configuration.
-- ✅ Database schema and seed data are complete and stable.
----
----
-
-## Known Limitations (Work in Progress)
-
-- ❌ Authentication (JWT) not yet implemented.
-- ❌ Controllers not yet coded – only endpoint plan and database are complete.
-- ❌ No front‑end application yet.
-- ❌ No containerisation or deployment configuration.
-- ✅ Database schema and seed data are complete and stable.
-
----
-
-## ⏭️Next Milestones
-
-1. Implement JWT Authentication.
-2. Build all controllers matching the API plan.
-3. Test all endpoints via Swagger.
-4. Build the MVC front‑end that consumes the API.
-5. Containerise with Docker.
-
----
-
-## 📃License
-
-This project is built for educational purposes as part of the PROG6212 module for Rosebank International.
-
----
-
-## ✍🏾Contributors
-
-- Mokadi Motsuenyane – ST10480772 Group 3
-
----
-
