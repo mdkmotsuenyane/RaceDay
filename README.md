@@ -1,4 +1,7 @@
-# RaceDay 
+# RaceDay
+
+![RaceDay.Api CI](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/api-ci.yml/badge.svg)
+![docs-check](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/docs-check.yml/badge.svg)
 
 > **🚧 WORK IN PROGRESS – ACADEMIC PROJECT**  
 > This project is currently in active development as part of the PROG6212 module. It is not yet deployed to production. Features, endpoints, and schema are subject to change until final submission.
@@ -7,7 +10,7 @@
 
 ## Overview
 
-RaceDay is a full‑stack event management platform designed specifically for the South African road running, walking, and cycling community. 
+RaceDay is a full‑stack event management platform designed specifically for the South African road running, walking, and cycling community.
 
 From the iconic **Comrades Marathon** and **Two Oceans Marathon** to the **Cape Town Cycle Tour** and **Soweto Marathon**, the platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter races, track their personal performance history, and prepare for race day using live weather and route information.
 
@@ -29,8 +32,8 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 | Authentication (JWT) | ✅ Complete |
 | Controllers Implementation | ✅ Complete |
 | Swagger Documentation | ✅ Complete |
-| Unit Tests | ⏳ In Progress |
-| CI/CD (GitHub Actions) | ⏳ In Progress |
+| Unit Tests | ✅ Complete |
+| CI/CD (GitHub Actions) | ✅ Complete |
 | Front‑end Integration | ⏳ Future Phase |
 | Containerisation (Docker) | ⏳ Future Phase |
 | Cloud Deployment | ⏳ Future Phase |
@@ -60,7 +63,8 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 | **Authentication** | JWT (JSON Web Tokens) |
 | **API Documentation** | Swagger / OpenAPI (Swashbuckle) |
 | **Password Hashing** | BCrypt.Net |
-| **Unit Testing** | xUnit (planned) |
+| **Unit Testing** | xUnit (53 tests) |
+| **CI/CD** | GitHub Actions |
 | **Containerisation** | Docker (Future) |
 | **Cloud** | Azure / AWS compatible (Future) |
 
@@ -141,7 +145,9 @@ Swagger UI opens automatically at `https://localhost:7100/swagger`.
 
 ## API Endpoint Plan
 
-The complete API endpoint plan (39 endpoints) is documented in [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf). It covers:
+The complete API endpoint plan (39 endpoints) is documented in [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf). A markdown reference is available at [`/docs/endpoints.md`](./docs/endpoints.md).
+
+It covers:
 
 - Authentication (Register, Login, Refresh)
 - User Profiles
@@ -159,6 +165,30 @@ The complete API endpoint plan (39 endpoints) is documented in [`/docs/API_Plan.
 3. `POST /api/v1/auth/login` to get a JWT.
 4. Click **Authorize** in Swagger, paste the token.
 5. All protected endpoints now work.
+
+---
+
+## Testing
+
+The API has **53 passing integration tests** covering all controllers:
+
+| Test File | Tests |
+|---|---|
+| `AuthControllerTests` | 6 |
+| `EventsControllerTests` | 6 |
+| `CategoriesControllerTests` | 9 |
+| `EntriesControllerTests` | 13 |
+| `UsersControllerTests` | 8 |
+| `ResultsControllerTests` | 11 |
+| **Total** | **53** |
+
+Run them with:
+
+```bash
+dotnet test RaceDay.slnx
+```
+
+Tests use `WebApplicationFactory<Program>` with an isolated in-memory database per test class, so they don't touch SQL Server and can run in parallel.
 
 ---
 
@@ -184,7 +214,7 @@ Core entities:
 RaceDay/
 ├── .github/
 │   └── workflows/            # CI workflows (docs-check.yml, api-ci.yml)
-├── docs/                     # Planning artifacts: API_Plan.pdf, RaceDayERD.png, screenshots
+├── docs/                     # Planning artifacts: API_Plan.pdf, RaceDayERD.png, endpoints.md
 ├── RaceDay.Api/              # ASP.NET Core Web API project
 │   ├── Controllers/          # API endpoints (8 controllers)
 │   ├── Data/                 # RaceDayDbContext
@@ -193,7 +223,7 @@ RaceDay/
 │   ├── Models/               # EF Core entities
 │   ├── Program.cs            # App configuration (EF Core, JWT, Swagger)
 │   └── appsettings.json
-├── RaceDay.Api.Tests/        # xUnit test project (in progress)
+├── RaceDay.Api.Tests/        # xUnit integration test project (53 tests)
 ├── RaceDay.slnx              # Solution file
 └── README.md
 ```
@@ -202,21 +232,23 @@ RaceDay/
 
 ## ⚙️ Continuous Integration
 
-A `docs-check.yml` GitHub Actions workflow runs on every push to `main`, verifying that the project's documentation stays in sync with the repo.
+Two GitHub Actions workflows run on every push to `main`:
 
-An `api-ci.yml` workflow will build and test the API on every push (in progress).
+- **`docs-check.yml`** – verifies that documentation stays in sync with the repo.
+- **`api-ci.yml`** – restores, builds, and runs all 53 tests against the API and test projects.
 
-![docs-check workflow passing](./docs/screenshots/ci-success.png)
+[View workflows](https://github.com/mdkmotsuenyane/RaceDay/actions)
 
 ---
 
 ## ⚠️ Known Limitations (Work in Progress)
 
-- ⏳ Unit tests not yet written for all endpoints.
-- ⏳ CI workflow for the API not yet added.
-- ❌ No front‑end application yet.
+- ❌ No front‑end application yet (planned for Part 3).
 - ❌ No containerisation or deployment configuration.
+- ❌ No cloud storage integration (Azure Blob planned).
 - ✅ Database schema and migrations are complete and stable.
+- ✅ All API endpoints implemented and covered by tests.
+- ✅ CI runs on every push.
 
 ---
 
@@ -225,10 +257,11 @@ An `api-ci.yml` workflow will build and test the API on every push (in progress)
 1. ~~Implement JWT Authentication.~~ ✅
 2. ~~Build all controllers matching the API plan.~~ ✅
 3. ~~Test all endpoints via Swagger.~~ ✅
-4. Write unit tests for API endpoints (xUnit).
-5. Add GitHub Actions workflow for build + test.
-6. Build the MVC front‑end that consumes the API.
+4. ~~Write unit tests for API endpoints (xUnit).~~ ✅
+5. ~~Add GitHub Actions workflow for build + test.~~ ✅
+6. Build the MVC front‑end that consumes the API (Part 3).
 7. Containerise with Docker.
+8. Integrate Azure Blob Storage for image uploads.
 
 ---
 
@@ -241,38 +274,3 @@ This project is built for educational purposes as part of the PROG6212 module fo
 ## ✍🏾 Contributors
 
 - Mokadi Motsuenyane – ST10480772 Group 3
-
-## What Changed vs. the Original
-```
-| Section | Change |
-|---|---|
-| Development Status | Auth, Controllers, Swagger moved from "Planned" to "✅ Complete" |
-| Technology Stack | .NET 8 → **.NET 10**, added BCrypt, xUnit row |
-| Getting Started | Added JWT user-secrets setup; corrected connection string to LocalDB; added `dotnet ef database update` |
-| API Endpoint Plan | Added a "Try It Out" walkthrough |
-| Project Structure | Expanded to show `RaceDay.Api/` and `RaceDay.Api.Tests/` |
-| CI section | Noted `api-ci.yml` (in progress) |
-| Known Limitations | Removed duplicate block; removed items now done |
-| Next Milestones | Struck through completed items; listed remaining |
-```
-## Push It
-
-```powershell
-cd C:\Users\kholo\source\repos\RaceDay-Repo
-git add README.md
-git commit -m "Update README: JWT auth and controllers now complete"
-git push
-```
-
-## Then — Test Project
-
-You'll notice the README now promises a `RaceDay.Api.Tests/` project. Time to create it:
-
-1. **File → Add → New Project**
-2. Search: `xUnit Test Project` — **Language: C#** (watch that dropdown this time)
-3. Name: `RaceDay.Api.Tests`
-4. Location: `C:\Users\kholo\source\repos\RaceDay-Repo\`
-5. Framework: .NET 10
-6. Create
-
-Then add project reference + packages per the last message, and tell me when it's ready. I'll send the test files.
