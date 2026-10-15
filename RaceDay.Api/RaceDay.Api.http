@@ -1,0 +1,35 @@
+@host = https://localhost:7100
+@token = PASTE_TOKEN_HERE
+
+### Register a Participant
+POST {{host}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test123!",
+  "fullName": "Test User",
+  "role": "Participant",
+  "phone": "0821234567",
+  "dateOfBirth": "1995-06-15T00:00:00"
+}
+
+### Login
+POST {{host}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Test123!"
+}
+
+### Get my profile
+GET {{host}}/api/v1/users/me
+Authorization: Bearer {{token}}
+
+### List upcoming events
+GET {{host}}/api/v1/events/upcoming
+
+### List my events (Organiser)
+GET {{host}}/api/v1/organisers
+Authorization: Bearer {{token}}
