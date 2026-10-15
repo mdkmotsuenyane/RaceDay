@@ -71,3 +71,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
+
+// Exposes the auto-generated Program class to the test project.
+public partial class Program { }
