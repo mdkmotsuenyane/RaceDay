@@ -33,7 +33,15 @@ namespace RaceDay.Mvc.Services
         public async Task<T?> GetAsync<T>(string url)
         {
             AttachToken();
-            return await _http.GetFromJsonAsync<T>(url);
+            var response = await _http.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<T>();
+            }
+
+            // Return null gracefully instead of throwing an exception on 404/401
+            return default;
         }
 
         public async Task<HttpResponseMessage> PostAsync<T>(string url, T data)
