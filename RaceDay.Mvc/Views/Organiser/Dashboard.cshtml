@@ -11,7 +11,18 @@
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     }
 
     @if (Model.Count == 0)
@@ -20,7 +31,7 @@
     }
     else
     {
-        <table class="table table-hover shadow-sm">
+        <table class="table table-hover shadow-sm align-middle">
             <thead class="table-light">
                 <tr>
                     <th>Event Name</th>
@@ -39,7 +50,18 @@
                         <td>@ev.Location</td>
                         <td><span class="badge bg-secondary">@ev.Status</span></td>
                         <td>
-                            <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-primary">View</a>
+                            <!-- Button Group -->
+                            <div class="btn-group" role="group">
+                                <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-primary">View</a>
+                                <a asp-action="ManageCategories" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-info">Categories</a>
+                                <a asp-action="EditEvent" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-warning">Edit</a>
+                            </div>
+
+                            <!-- Delete Form -->
+                            <form asp-action="DeleteEvent" asp-route-id="@ev.EventID" method="post" class="d-inline ms-1" onsubmit="return confirm('Are you sure you want to delete this event? This will also remove any categories and entries.');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 }

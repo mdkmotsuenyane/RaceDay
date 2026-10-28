@@ -163,5 +163,50 @@ namespace RaceDay.Mvc.Controllers
 
             return RedirectToAction(nameof(Dashboard));
         }
+
+        // ==========================================
+        // NEW METHODS FOR CATEGORIES
+        // ==========================================
+
+        // GET: /Organiser/ManageCategories/5
+        public async Task<IActionResult> ManageCategories(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var ev = await _api.GetAsync<EventDetailsDto>($"/api/v1/events/{id}");
+            if (ev == null) return NotFound();
+
+            var categories = await _api.GetAsync<List<CategoryResponseDto>>($"/api/v1/events/{id}/categories");
+
+            ViewBag.EventId = id;
+            ViewBag.EventName = ev.Name;
+
+            return View(categories ?? new List<CategoryResponseDto>());
+        }
+
+        // POST: /Organiser/AddCategory
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCategory(int eventId, CreateCategoryRequestDto model)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Please fill in all required fields correctly.";
+                return RedirectToAction(nameof(ManageCategories), new { id = eventId });
+            }
+
+            var response = await _api.PostAsync($"/api/v1/events/{eventId}/categories", model);
+
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Category added successfully!";
+            else
+                TempData["Error"] = "Failed to add category.";
+
+            return RedirectToAction(nameof(ManageCategories), new { id = eventId });
+        }
     }
 }

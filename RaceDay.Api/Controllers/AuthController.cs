@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RaceDay.Data;
@@ -25,8 +25,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // POST /api/v1/auth/register
-        // Register a new user (Participant or Organiser). Public.
-        // 201 Created | 400 Bad Request (duplicate email / validation)
         // ============================================================
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
@@ -34,15 +32,12 @@ namespace RaceDay.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // Role must be one of the two allowed values
             if (dto.Role != "Participant" && dto.Role != "Organiser")
                 return BadRequest(new { message = "Role must be 'Participant' or 'Organiser'." });
 
-            // Participant requires dateOfBirth (per API plan)
             if (dto.Role == "Participant" && dto.DateOfBirth == null)
                 return BadRequest(new { message = "dateOfBirth is required for Participants." });
 
-            // Duplicate email check (DbSet is named "User")
             bool emailTaken = await _context.User.AnyAsync(u => u.Email == dto.Email);
             if (emailTaken)
                 return BadRequest(new { message = "Duplicate email." });
@@ -60,13 +55,9 @@ namespace RaceDay.Controllers
             _context.User.Add(user);
             await _context.SaveChangesAsync();
 
-            // NOTE: dateOfBirth is not stored on User (per your model).
-            // It belongs on the Participant profile, created via
-            // POST /api/v1/participants with { userID, ..., dateOfBirth }.
-
             var response = new RegisterResponseDto
             {
-                UserID = user.UserId,   // <-- note: UserId, not UserID
+                UserID = user.UserId,
                 Email = user.Email,
                 Role = user.Role,
                 FullName = user.FullName
@@ -77,8 +68,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // POST /api/v1/auth/login
-        // Authenticate and receive JWT token. Public.
-        // 200 OK | 401 Unauthorized
         // ============================================================
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
@@ -86,7 +75,21 @@ namespace RaceDay.Controllers
             var user = await _context.User
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
+            if (user == null)
+                return Unauthorized(new { message = "Invalid email or password." });
+
+            bool isPasswordValid = false;
+            try
+            {
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
+            }
+            catch (BCrypt.Net.SaltParseException)
+            {
+                // If the hash in the DB is invalid (e.g., seeded placeholder), treat it as a bad login
+                return Unauthorized(new { message = "Invalid email or password. (Database hash is corrupted)" });
+            }
+
+            if (!isPasswordValid)
                 return Unauthorized(new { message = "Invalid email or password." });
 
             var accessToken = GenerateAccessToken(user);
@@ -95,15 +98,13 @@ namespace RaceDay.Controllers
             return Ok(new LoginResponseDto
             {
                 Token = accessToken,
-                ExpiresIn = 86400,           // 24 hours, as per API plan
+                ExpiresIn = 86400,
                 RefreshToken = refreshToken
             });
         }
 
         // ============================================================
         // POST /api/v1/auth/refresh
-        // Refresh an expired JWT. Public.
-        // 200 OK | 401 Unauthorized (invalid refresh token)
         // ============================================================
         [HttpPost("refresh")]
         public IActionResult Refresh([FromBody] RefreshRequestDto dto)
@@ -121,12 +122,10 @@ namespace RaceDay.Controllers
                 return Unauthorized(new { message = "Invalid refresh token." });
             }
 
-            // Must be a refresh-type token
             var tokenType = principal.FindFirst("tokenType")?.Value;
             if (tokenType != "refresh")
                 return Unauthorized(new { message = "Invalid refresh token." });
 
-            // Rebuild the User from claims
             var userIdClaim = principal.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
                               ?? principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -172,7 +171,6 @@ namespace RaceDay.Controllers
                 new Claim("tokenType", "refresh")
             };
 
-            // Refresh tokens live longer (e.g. 7 days)
             return BuildToken(claims, DateTime.UtcNow.AddDays(7));
         }
 
