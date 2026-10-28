@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RaceDay.Mvc.Models; // Need this for CreateEventViewModel
 using RaceDay.Mvc.Services;
 using RaceDay.DTOs;
 
@@ -39,23 +40,51 @@ namespace RaceDay.Mvc.Controllers
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
                 return RedirectToAction("Login", "Account");
 
-            return View();
+            return View(new CreateEventViewModel());
         }
 
         // POST: /Organiser/CreateEvent
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateEvent(CreateEventRequestDto model)
+        public async Task<IActionResult> CreateEvent(CreateEventViewModel model)
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
                 return RedirectToAction("Login", "Account");
 
             if (!ModelState.IsValid) return View(model);
 
-            var response = await _api.PostAsync("/api/v1/events", model);
+            // 1. Map ViewModel to API DTO and create the event
+            var dto = new CreateEventRequestDto
+            {
+                Name = model.Name,
+                Description = model.Description,
+                EventDate = model.EventDate,
+                StartTime = model.StartTime,
+                Location = model.Location,
+                Status = "Open",
+                StartPoint = model.StartPoint,
+                FinishPoint = model.FinishPoint
+            };
+
+            var response = await _api.PostAsync("/api/v1/events", dto);
 
             if (response.IsSuccessStatusCode)
             {
+                // 2. If successful, get the new EventID
+                var createdEvent = await response.Content.ReadFromJsonAsync<EventResponseDto>();
+
+                // 3. If an image was uploaded, send it to the Blob Storage API
+                if (model.ImageFile != null && model.ImageFile.Length > 0 && createdEvent != null)
+                {
+                    using var content = new MultipartFormDataContent();
+                    using var stream = model.ImageFile.OpenReadStream();
+
+                    content.Add(new StreamContent(stream), "file", model.ImageFile.FileName);
+
+                    // Call the new API endpoint we created
+                    await _api.PostFileAsync($"/api/v1/events/{createdEvent.EventID}/upload-image", content);
+                }
+
                 TempData["Success"] = "Event created successfully!";
                 return RedirectToAction(nameof(Dashboard));
             }
@@ -74,7 +103,6 @@ namespace RaceDay.Mvc.Controllers
             var ev = await _api.GetAsync<EventDetailsDto>($"/api/v1/events/{id}");
             if (ev == null) return NotFound();
 
-            // Map the details DTO to the update DTO for the form
             var model = new UpdateEventRequestDto
             {
                 Name = ev.Name,

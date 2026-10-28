@@ -53,5 +53,13 @@ namespace RaceDay.Mvc.Services
             AttachToken();
             return await _http.DeleteAsync(url);
         }
+
+        // ---------- File Upload Helper ----------
+
+        public async Task<HttpResponseMessage> PostFileAsync(string url, MultipartFormDataContent content)
+        {
+            AttachToken();
+            return await _http.PostAsync(url, content);
+        }
     }
 }
