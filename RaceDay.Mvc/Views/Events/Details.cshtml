@@ -54,7 +54,17 @@
                                 <h5 class="mb-1">@cat.Name</h5>
                                 <small class="text-muted">Distance: @cat.Distance km | Age: @cat.MinAge - @cat.MaxAge | Gender: @(string.IsNullOrEmpty(cat.Gender) ? "Open" : cat.Gender)</small>
                             </div>
-                            <!-- We will add the 'Enter' button here later -->
+                            
+                            @if (Context.Session.GetString("UserRole") == "Participant")
+                            {
+                                <form asp-controller="Participant" asp-action="EnterEvent" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="eventId" value="@Model.EventID" />
+                                    <input type="hidden" name="categoryId" value="@cat.CategoryID" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Enter Race</button>
+                                </form>
+                            }
+                            
                         </div>
                     }
                 </div>

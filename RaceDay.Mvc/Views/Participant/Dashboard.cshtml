@@ -1,0 +1,96 @@
+@model List<RaceDay.DTOs.EntryResponseDto>
+@{
+    ViewBag.Title = "My Entries";
+    // We passed the event dictionary from the controller
+    var events = ViewBag.Events as Dictionary<int, RaceDay.DTOs.EventResponseDto>;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Race Entries</h2>
+        <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Find More Races</a>
+    </div>
+
+    <!-- Success / Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info shadow-sm">
+            You haven't entered any races yet. <a asp-controller="Events" asp-action="Index" class="alert-link">Browse events</a> to get started!
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Event Name</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Entry ID</th>
+                            <th class="text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model)
+                        {
+                            // Look up the event details using the EventID
+                            var ev = events != null && entry.EventID.HasValue && events.ContainsKey(entry.EventID.Value) 
+                                     ? events[entry.EventID.Value] 
+                                     : null;
+
+                            <tr>
+                                <td class="ps-3 fw-bold">
+                                    @if (ev != null)
+                                    {
+                                        <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="text-decoration-none">
+                                            @ev.Name
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        @($"Event #{entry.EventID}")
+                                    }
+                                </td>
+                                <td>@(ev?.EventDate.ToString("dd MMM yyyy") ?? "TBA")</td>
+                                <td>
+                                    @if(entry.Status == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">@entry.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@entry.Status</span>
+                                    }
+                                </td>
+                                <td>#@entry.EntryID</td>
+                                <td class="text-end pe-3">
+                                    <form asp-action="Withdraw" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to withdraw from this race?');">
+                                        <input type="hidden" name="entryId" value="@entry.EntryID" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Withdraw</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

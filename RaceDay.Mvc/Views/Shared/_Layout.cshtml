@@ -27,10 +27,18 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Browse Events</a>
                         </li>
+
+                        <!-- Role-Specific Links -->
                         @if (Context.Session.GetString("UserRole") == "Organiser")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-primary fw-bold" asp-controller="Organiser" asp-action="Dashboard">My Dashboard</a>
+                            </li>
+                        }
+                        @if (Context.Session.GetString("UserRole") == "Participant")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-primary fw-bold" asp-controller="Participant" asp-action="Dashboard">My Entries</a>
                             </li>
                         }
                     </ul>
@@ -74,7 +82,7 @@
 
     <footer class="border-top footer text-muted mt-5">
         <div class="container">
-            &copy; 2026 - RaceDay - PROG6212 Project
+            &copy; 2026 - RaceDay 
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
