@@ -1,0 +1,91 @@
+@model RaceDay.DTOs.EventDetailsDto
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Main Event Info -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <span class="badge bg-success float-end">@Model.Status</span>
+                    <h1 class="card-title">@Model.Name</h1>
+                    <h4 class="text-muted mb-4">@Model.EventDate.ToString("dddd, dd MMMM yyyy")</h4>
+
+                    <p class="lead">@Model.Description</p>
+
+                    <hr />
+
+                    <div class="row mt-4">
+                        <div class="col-sm-6 mb-3">
+                            <strong>📍 Location</strong><br />
+                            @Model.Location
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <strong>⏰ Start Time</strong><br />
+                            @(string.IsNullOrEmpty(Model.StartTime) ? "TBA" : Model.StartTime)
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <strong>🏁 Start Point</strong><br />
+                            @Model.StartPoint
+                        </div>
+                        <div class="col-sm-6 mb-3">
+                            <strong>🏁 Finish Point</strong><br />
+                            @Model.FinishPoint
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <h3 class="mt-4 mb-3">Race Categories</h3>
+            @if (Model.Categories == null || !Model.Categories.Any())
+            {
+                <p class="text-muted">No categories available yet.</p>
+            }
+            else
+            {
+                <div class="list-group shadow-sm mb-5">
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">@cat.Name</h5>
+                                <small class="text-muted">Distance: @cat.Distance km | Age: @cat.MinAge - @cat.MaxAge | Gender: @(string.IsNullOrEmpty(cat.Gender) ? "Open" : cat.Gender)</small>
+                            </div>
+                            <!-- We will add the 'Enter' button here later -->
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar: Weather & Route -->
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🌤️ Weather Forecast</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2"><strong>Conditions:</strong> @(Model.WeatherForecast ?? "N/A")</li>
+                        <li class="mb-2"><strong>Temp:</strong> @(Model.Temperature?.ToString("0.0") ?? "-") °C</li>
+                        <li class="mb-2"><strong>Wind:</strong> @(Model.WindSpeed?.ToString() ?? "-") km/h</li>
+                        <li><strong>Rain:</strong> @(Model.Precipitation?.ToString() ?? "-") mm</li>
+                    </ul>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.MapUrl))
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header">🗺️ Route Map</div>
+                    <div class="card-body text-center">
+                        <a href="@Model.MapUrl" target="_blank" class="btn btn-outline-secondary w-100">View Map</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

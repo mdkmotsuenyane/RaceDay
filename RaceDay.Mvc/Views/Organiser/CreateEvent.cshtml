@@ -1,0 +1,55 @@
+@model RaceDay.DTOs.CreateEventRequestDto
+@{
+    ViewBag.Title = "Create Event";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm mx-auto" style="max-width: 700px;">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Create a New Event</h3>
+
+            <form asp-action="CreateEvent" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Event Name</label>
+                    <input asp-for="Name" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EventDate" class="form-label">Event Date</label>
+                        <input asp-for="EventDate" type="date" class="form-control" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StartTime" class="form-label">Start Time</label>
+                        <input asp-for="StartTime" class="form-control" placeholder="06:00" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Location" class="form-label">Location</label>
+                    <input asp-for="Location" class="form-control" required />
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StartPoint" class="form-label">Start Point</label>
+                        <input asp-for="StartPoint" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FinishPoint" class="form-label">Finish Point</label>
+                        <input asp-for="FinishPoint" class="form-control" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Create Event</button>
+            </form>
+        </div>
+    </div>
+</div>

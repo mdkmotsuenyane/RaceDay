@@ -1,0 +1,49 @@
+@model List<RaceDay.DTOs.EventResponseDto>
+@{
+    ViewBag.Title = "Organiser Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Events</h2>
+        <a asp-action="CreateEvent" class="btn btn-success">+ Create New Event</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">You haven't created any events yet.</div>
+    }
+    else
+    {
+        <table class="table table-hover shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>Event Name</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">@ev.Name</td>
+                        <td>@ev.EventDate.ToString("dd MMM yyyy")</td>
+                        <td>@ev.Location</td>
+                        <td><span class="badge bg-secondary">@ev.Status</span></td>
+                        <td>
+                            <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

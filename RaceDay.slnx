@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="RaceDay.Api.Tests/RaceDay.Api.Tests.csproj" />
   <Project Path="RaceDay.Api/RaceDay.Api.csproj" />
+  <Project Path="RaceDay.Mvc/RaceDay.Mvc.csproj" />
 </Solution>
