@@ -47,19 +47,37 @@
                     </ul>
 
                     <!-- Right Side Session Links -->
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
                         @if (Context.Session.GetString("JwtToken") != null)
                         {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark fw-bold">
-                                    Hello, @Context.Session.GetString("UserName")!
-                                    <span class="badge bg-secondary ms-1">@Context.Session.GetString("UserRole")</span>
-                                </span>
+                            var profilePic = Context.Session.GetString("ProfileImageUrl");
+                            
+                            <li class="nav-item me-3">
+                                <a class="nav-link text-dark fw-bold p-0 d-flex align-items-center text-decoration-none" asp-controller="Account" asp-action="Profile" title="Click to edit profile">
+                                    
+                                    <!-- Profile Picture or Fallback Icon -->
+                                    @if (!string.IsNullOrEmpty(profilePic))
+                                    {
+                                        <img src="@profilePic" class="rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #0d6efd;" alt="Avatar" />
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                            👤
+                                        </div>
+                                    }
+
+                                    <!-- Name and Role -->
+                                    <div class="d-flex flex-column text-start">
+                                        <span>Hello, @Context.Session.GetString("UserName")!</span>
+                                        <span class="badge bg-secondary mt-1" style="font-size: 0.7em; align-self: flex-start;">@Context.Session.GetString("UserRole")</span>
+                                    </div>
+                                </a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item d-flex align-items-center">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
                                 </form>
                             </li>
                         }

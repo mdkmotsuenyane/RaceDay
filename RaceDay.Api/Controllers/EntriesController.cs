@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Data;
@@ -20,8 +20,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/participants/{participantId}/entries
-        // All entries for a participant. Role: Self or Organiser.
-        // 200 OK | 403 Forbidden
         // ============================================================
         [HttpGet("api/v1/participants/{participantId:int}/entries")]
         [Authorize]
@@ -48,8 +46,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/events/{eventId}/entries
-        // All entries for an event (organiser dashboard). Organiser (Owner).
-        // 200 OK | 403 Forbidden | 404 Not Found
         // ============================================================
         [HttpGet("api/v1/events/{eventId:int}/entries")]
         [Authorize(Roles = "Organiser")]
@@ -80,6 +76,11 @@ namespace RaceDay.Controllers
                     ParticipantLastName = e.Participant != null ? e.Participant.LastName : null,
                     ParticipantEmail = e.Participant != null && e.Participant.User != null
                                              ? e.Participant.User.Email
+                                             : null,
+
+                    // NEW: Map the profile picture URL
+                    ParticipantProfileImageUrl = e.Participant != null && e.Participant.User != null
+                                             ? e.Participant.User.ProfileImageUrl
                                              : null
                 })
                 .ToListAsync();
@@ -89,8 +90,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/entries/{id}
-        // Get single entry. Role: Self or Organiser.
-        // 200 OK | 403 Forbidden | 404 Not Found
         // ============================================================
         [HttpGet("api/v1/entries/{id:int}")]
         [Authorize]
@@ -110,8 +109,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // POST /api/v1/entries
-        // Register a participant for an event. Participant (Self).
-        // 201 Created | 400 Bad Request | 403 Forbidden
         // ============================================================
         [HttpPost("api/v1/entries")]
         [Authorize(Roles = "Participant")]
@@ -119,7 +116,6 @@ namespace RaceDay.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            // Participant must own this entry
             var participant = await _context.Participants
                 .FirstOrDefaultAsync(p => p.ParticipantID == dto.ParticipantID);
             if (participant == null)
@@ -129,14 +125,12 @@ namespace RaceDay.Controllers
             if (!currentUserId.HasValue || participant.UserID != currentUserId.Value)
                 return Forbid();
 
-            // Event must exist and be Open
             var ev = await _context.Events.FindAsync(dto.EventID);
             if (ev == null)
                 return BadRequest(new { message = "Event not found." });
             if (ev.Status != "Open")
                 return BadRequest(new { message = "This event is not open for entries." });
 
-            // Category (if provided) must belong to this event
             if (dto.CategoryID.HasValue)
             {
                 var categoryOk = await _context.Categories
@@ -145,7 +139,6 @@ namespace RaceDay.Controllers
                     return BadRequest(new { message = "Category does not belong to this event." });
             }
 
-            // Duplicate check
             var already = await _context.Entries
                 .AnyAsync(e => e.ParticipantID == dto.ParticipantID && e.EventId == dto.EventID);
             if (already)
@@ -169,8 +162,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // PUT /api/v1/entries/{id}
-        // Update entry. Organiser (owner of event) OR Participant (self).
-        // 200 OK | 400 | 403 | 404
         // ============================================================
         [HttpPut("api/v1/entries/{id:int}")]
         [Authorize]
@@ -189,8 +180,6 @@ namespace RaceDay.Controllers
             var isOrganiser = User.IsInRole("Organiser");
             var isParticipant = User.IsInRole("Participant");
 
-            // Organiser can change: status, startNumber, paid
-            // Participant can change: paid only
             if (isOrganiser)
             {
                 if (dto.Status != null) entry.Status = dto.Status;
@@ -200,7 +189,6 @@ namespace RaceDay.Controllers
             else if (isParticipant)
             {
                 if (dto.Paid.HasValue) entry.Paid = dto.Paid;
-                // Ignore status/startNumber silently if participant sends them
             }
             else
             {
@@ -214,8 +202,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // DELETE /api/v1/entries/{id}
-        // Withdraw an entry. Self or Organiser.
-        // 204 No Content | 403 | 404 | 409
         // ============================================================
         [HttpDelete("api/v1/entries/{id:int}")]
         [Authorize]
@@ -230,12 +216,10 @@ namespace RaceDay.Controllers
             if (!await CanAccessEntry(entry))
                 return Forbid();
 
-            // Block if a result exists
             var hasResult = await _context.Results.AnyAsync(r => r.EntryID == id);
             if (hasResult)
                 return Conflict(new { message = "Cannot withdraw — a result exists for this entry." });
 
-            // Block if the event has started
             if (entry.EventId.HasValue)
             {
                 var ev = await _context.Events.FindAsync(entry.EventId.Value);
@@ -280,20 +264,14 @@ namespace RaceDay.Controllers
             return organiser?.OrganiserID;
         }
 
-        /// <summary>
-        /// True if the current user is either the owner participant
-        /// or the organiser who owns the entry's event.
-        /// </summary>
         private async Task<bool> CanAccessEntry(Entry entry)
         {
             var currentUserId = GetCurrentUserId();
             if (currentUserId == null) return false;
 
-            // Participant self?
             if (entry.Participant != null && entry.Participant.UserID == currentUserId.Value)
                 return true;
 
-            // Organiser of the event?
             if (User.IsInRole("Organiser") && entry.EventId.HasValue)
             {
                 var organiserId = await GetCurrentOrganiserID();

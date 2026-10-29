@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http; // Add this line
 
 namespace RaceDay.Mvc.Models
 {
@@ -34,5 +35,26 @@ namespace RaceDay.Mvc.Models
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
+    }
+
+    
+    public class ProfileViewModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public string? ProfileImageUrl { get; set; }
+
+        [Required, StringLength(128)]
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; } = string.Empty;
+
+        [StringLength(32)]
+        public string? Phone { get; set; }
+
+        [Display(Name = "Emergency Contact")]
+        public string? EmergencyContact { get; set; }
+
+        [Display(Name = "Profile Picture")]
+        public IFormFile? ProfileImage { get; set; }
     }
 }

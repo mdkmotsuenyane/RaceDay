@@ -87,7 +87,7 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/participants/{participantId}/results
-        // NEW: Get all results for a specific participant
+        // FIXED: Now includes Event Name, Date, Category, and Total Finishers
         // ============================================================
         [HttpGet("api/v1/participants/{participantId:int}/results")]
         [Authorize]
@@ -102,6 +102,10 @@ namespace RaceDay.Controllers
 
             var results = await _context.Results
                 .Where(r => r.Entry != null && r.Entry.ParticipantID == participantId)
+                .Include(r => r.Entry)
+                    .ThenInclude(e => e!.Event)
+                .Include(r => r.Entry)
+                    .ThenInclude(e => e!.Category)
                 .Select(r => new ResultResponseDto
                 {
                     ResultID = r.ResultID,
@@ -110,7 +114,17 @@ namespace RaceDay.Controllers
                     Position = r.Position,
                     Status = r.Status,
                     ChipTime = r.ChipTime,
-                    GunTime = r.GunTime
+                    GunTime = r.GunTime,
+
+                    // New fields for the UI
+                    EventName = r.Entry!.Event!.Name,
+                    EventDate = r.Entry.Event.EventDate,
+                    CategoryName = r.Entry.Category != null ? r.Entry.Category.Name : "Open",
+
+                    // Calculate total finishers for this specific event
+                    TotalFinishers = _context.Results.Count(res =>
+                        res.Entry!.EventId == r.Entry.EventId &&
+                        res.Status == "Finished")
                 })
                 .ToListAsync();
 

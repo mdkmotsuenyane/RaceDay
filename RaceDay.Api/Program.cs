@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;                          // ← OpenApi 2.x namespace
+using Microsoft.OpenApi;
 using RaceDay.Data;
+using RaceDay.Api.Services; // Added this for BlobService
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,12 @@ builder.Services.AddDbContext<RaceDayDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+
+// ============================================================
+// THIS IS THE MISSING LINE YOU NEED:
+// ============================================================
+builder.Services.AddScoped<RaceDay.Api.Services.BlobService>();
+
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key missing from config");

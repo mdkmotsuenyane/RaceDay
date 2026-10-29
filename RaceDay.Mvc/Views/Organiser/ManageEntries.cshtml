@@ -48,7 +48,19 @@
                         {
                             <tr>
                                 <td class="ps-3 fw-bold">
-                                    @entry.ParticipantFirstName @entry.ParticipantLastName
+                                    <div class="d-flex align-items-center">
+                                        @if (!string.IsNullOrEmpty(entry.ParticipantProfileImageUrl))
+                                        {
+                                            <img src="@entry.ParticipantProfileImageUrl" class="rounded-circle me-2 shadow-sm" style="width: 35px; height: 35px; object-fit: cover;" alt="Avatar" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px; font-size: 1rem;">
+                                                👤
+                                            </div>
+                                        }
+                                        <span>@entry.ParticipantFirstName @entry.ParticipantLastName</span>
+                                    </div>
                                 </td>
                                 <td>@entry.ParticipantEmail</td>
                                 

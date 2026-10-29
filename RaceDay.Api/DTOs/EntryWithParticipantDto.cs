@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace RaceDay.DTOs
 {
     public class EntryWithParticipantDto
@@ -8,7 +6,7 @@ namespace RaceDay.DTOs
         public int? ParticipantID { get; set; }
         public int? EventID { get; set; }
         public int? CategoryID { get; set; }
-        public DateTime? RegistrationDate { get; set; }
+        public System.DateTime? RegistrationDate { get; set; }
         public string? Status { get; set; }
         public int? StartNumber { get; set; }
         public int? Paid { get; set; }
@@ -17,5 +15,7 @@ namespace RaceDay.DTOs
         public string? ParticipantFirstName { get; set; }
         public string? ParticipantLastName { get; set; }
         public string? ParticipantEmail { get; set; }
+
+        public string? ParticipantProfileImageUrl { get; set; }
     }
 }

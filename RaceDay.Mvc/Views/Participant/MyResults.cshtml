@@ -18,11 +18,11 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-3">Entry ID</th>
-                            <th>Position</th>
+                            <th class="ps-3">Event</th>
+                            <th>Date</th>
+                            <th>Category</th>
                             <th>Finish Time</th>
-                            <th>Chip Time</th>
-                            <th>Gun Time</th>
+                            <th>Position</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -30,11 +30,21 @@
                         @foreach (var result in Model)
                         {
                             <tr>
-                                <td class="ps-3 fw-bold">#@result.EntryID</td>
-                                <td><span class="badge bg-primary fs-6">@result.Position</span></td>
-                                <td class="fw-bold">@result.FinishTime</td>
-                                <td>@result.ChipTime</td>
-                                <td>@result.GunTime</td>
+                                <td class="ps-3 fw-bold">@result.EventName</td>
+                                <td>@result.EventDate?.ToString("dd MMM yyyy")</td>
+                                <td>@(string.IsNullOrEmpty(result.CategoryName) ? "Open" : result.CategoryName)</td>
+                                <td class="fw-bold text-primary">@result.FinishTime</td>
+                                <td>
+                                    @if(result.Position.HasValue && result.Status == "Finished")
+                                    {
+                                        <span class="fw-bold">@result.Position</span> 
+                                        <span class="text-muted small">out of @result.TotalFinishers</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
                                 <td>
                                     @if(result.Status == "Finished")
                                     {
