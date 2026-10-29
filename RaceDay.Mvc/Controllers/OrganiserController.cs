@@ -189,7 +189,6 @@ namespace RaceDay.Mvc.Controllers
 
             if (!ModelState.IsValid)
             {
-                // Find out exactly WHY it failed
                 var errors = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 TempData["Error"] = "Validation failed: " + errors;
                 return RedirectToAction(nameof(ManageCategories), new { id = eventId });
@@ -201,7 +200,6 @@ namespace RaceDay.Mvc.Controllers
                 TempData["Success"] = "Category added successfully!";
             else
             {
-                var errorBody = await response.Content.ReadAsStringAsync();
                 TempData["Error"] = $"API Error: {response.StatusCode}";
             }
 
@@ -224,6 +222,78 @@ namespace RaceDay.Mvc.Controllers
                 TempData["Error"] = "Failed to delete category. It might have participants registered.";
 
             return RedirectToAction(nameof(ManageCategories), new { id = eventId });
+        }
+
+        // ==========================================
+        // ENTRY & RESULT METHODS
+        // ==========================================
+
+        // GET: /Organiser/ManageEntries/5
+        public async Task<IActionResult> ManageEntries(int id)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var ev = await _api.GetAsync<EventDetailsDto>($"/api/v1/events/{id}");
+            if (ev == null) return NotFound();
+
+            var entries = await _api.GetAsync<List<EntryWithParticipantDto>>($"/api/v1/events/{id}/entries");
+
+            ViewBag.EventId = id;
+            ViewBag.EventName = ev.Name;
+
+            return View(entries ?? new List<EntryWithParticipantDto>());
+        }
+
+        // POST: /Organiser/UpdateEntry
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateEntry(int entryId, int eventId, string status, int? startNumber)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var dto = new UpdateEntryRequestDto
+            {
+                Status = status,
+                StartNumber = startNumber
+            };
+
+            var response = await _api.PutAsync($"/api/v1/entries/{entryId}", dto);
+
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Entry updated successfully!";
+            else
+                TempData["Error"] = "Failed to update entry.";
+
+            return RedirectToAction(nameof(ManageEntries), new { id = eventId });
+        }
+
+        // POST: /Organiser/UploadResult
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadResult(int entryId, int eventId, CreateResultRequestDto model)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Invalid result data.";
+                return RedirectToAction(nameof(ManageEntries), new { id = eventId });
+            }
+
+            var response = await _api.PostAsync($"/api/v1/entries/{entryId}/result", model);
+
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Result uploaded successfully!";
+            else
+            {
+                var errorMsg = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"API Error: {response.StatusCode}. {errorMsg}";
+            }
+
+            return RedirectToAction(nameof(ManageEntries), new { id = eventId });
         }
     }
 }

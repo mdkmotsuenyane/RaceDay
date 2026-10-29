@@ -53,6 +53,10 @@
                             <!-- Button Group -->
                             <div class="btn-group" role="group">
                                 <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-primary">View</a>
+                                
+                                <!-- THIS IS THE MISSING BUTTON -->
+                                <a asp-action="ManageEntries" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-success">Entries</a>
+                                
                                 <a asp-action="ManageCategories" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-info">Categories</a>
                                 <a asp-action="EditEvent" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-warning">Edit</a>
                             </div>

@@ -116,5 +116,22 @@ namespace RaceDay.Mvc.Controllers
 
             return RedirectToAction(nameof(Dashboard));
         }
+
+        // GET: /Participant/MyResults
+        public async Task<IActionResult> MyResults()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Participant")
+                return RedirectToAction("Login", "Account");
+
+            var profile = await _api.GetAsync<UserProfileResponseDto>("/api/v1/users/me");
+
+            if (profile?.ParticipantID == null)
+                return RedirectToAction("Index", "Home");
+
+            // Call the new API endpoint we added
+            var results = await _api.GetAsync<List<ResultResponseDto>>($"/api/v1/participants/{profile.ParticipantID}/results");
+
+            return View(results ?? new List<ResultResponseDto>());
+        }
     }
 }

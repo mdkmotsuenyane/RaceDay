@@ -1,0 +1,100 @@
+@model List<RaceDay.DTOs.EntryWithParticipantDto>
+@{
+    ViewBag.Title = "Manage Entries & Results";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Entries for @ViewBag.EventName</h2>
+            <a asp-action="Dashboard" class="text-muted text-decoration-none">&larr; Back to Dashboard</a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No participants have entered this event yet.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Participant</th>
+                            <th>Email</th>
+                            <th style="width: 25%;">Update Entry (Status / Start #)</th>
+                            <th class="text-end pe-3" style="width: 35%;">Upload Result (Time / Pos)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold">
+                                    @entry.ParticipantFirstName @entry.ParticipantLastName
+                                </td>
+                                <td>@entry.ParticipantEmail</td>
+                                
+                                <!-- UPDATE ENTRY FORM -->
+                                <td>
+                                    <form asp-action="UpdateEntry" method="post" class="d-flex gap-1">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="entryId" value="@entry.EntryID" />
+                                        <input type="hidden" name="eventId" value="@ViewBag.EventId" />
+                                        
+                                        <select name="status" class="form-select form-select-sm" style="width: 110px;">
+                                            <option value="Pending" selected="@(entry.Status == "Pending")">Pending</option>
+                                            <option value="Confirmed" selected="@(entry.Status == "Confirmed")">Confirmed</option>
+                                            <option value="Cancelled" selected="@(entry.Status == "Cancelled")">Cancelled</option>
+                                        </select>
+                                        
+                                        <input type="number" name="startNumber" value="@entry.StartNumber" class="form-control form-control-sm" placeholder="#" style="width: 70px;" />
+                                        
+                                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    </form>
+                                </td>
+
+                                <!-- UPLOAD RESULT FORM -->
+                                <td class="text-end pe-3">
+                                    <form asp-action="UploadResult" method="post" class="d-flex gap-1 justify-content-end">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="entryId" value="@entry.EntryID" />
+                                        <input type="hidden" name="eventId" value="@ViewBag.EventId" />
+                                        
+                                        <input type="text" name="FinishTime" class="form-control form-control-sm" placeholder="Time" style="width: 90px;" required />
+                                        <input type="number" name="Position" class="form-control form-control-sm" placeholder="Pos" style="width: 70px;" required />
+                                        
+                                        <select name="Status" class="form-select form-select-sm" style="width: 100px;">
+                                            <option value="Finished">Finished</option>
+                                            <option value="DNF">DNF</option>
+                                            <option value="DNS">DNS</option>
+                                        </select>
+                                        
+                                        <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

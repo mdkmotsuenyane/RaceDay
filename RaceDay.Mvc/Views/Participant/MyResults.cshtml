@@ -1,0 +1,55 @@
+@model List<RaceDay.DTOs.ResultResponseDto>
+@{ ViewBag.Title = "My Results"; }
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Race Results</h2>
+        <a asp-action="Dashboard" class="btn btn-outline-secondary">Back to My Entries</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">You don't have any results yet. Complete a race and your times will appear here!</div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Entry ID</th>
+                            <th>Position</th>
+                            <th>Finish Time</th>
+                            <th>Chip Time</th>
+                            <th>Gun Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var result in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 fw-bold">#@result.EntryID</td>
+                                <td><span class="badge bg-primary fs-6">@result.Position</span></td>
+                                <td class="fw-bold">@result.FinishTime</td>
+                                <td>@result.ChipTime</td>
+                                <td>@result.GunTime</td>
+                                <td>
+                                    @if(result.Status == "Finished")
+                                    {
+                                        <span class="badge bg-success">@result.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">@result.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
