@@ -6,6 +6,7 @@ using RaceDay.DTOs;
 using System.Net.Http.Json;
 using System.Net.Http;
 using System.IO;
+using System;
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -47,8 +48,6 @@ namespace RaceDay.Mvc.Controllers
                 {
                     HttpContext.Session.SetString("UserRole", profile.Role);
                     HttpContext.Session.SetString("UserName", profile.FullName ?? "User");
-
-                    // SAVE THE PROFILE PICTURE TO SESSION ON LOGIN
                     HttpContext.Session.SetString("ProfileImageUrl", profile.ProfileImageUrl ?? "");
                 }
 
@@ -138,51 +137,58 @@ namespace RaceDay.Mvc.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            // 1. Update text fields
-            var updateDto = new UpdateUserProfileRequestDto
+            try
             {
-                FullName = model.FullName,
-                Phone = model.Phone,
-                EmergencyContact = model.EmergencyContact
-            };
-
-            var updateResponse = await _api.PutAsync("/api/v1/users/me", updateDto);
-
-            if (!updateResponse.IsSuccessStatusCode)
-            {
-                TempData["Error"] = $"Failed to update basic info. API said: {updateResponse.StatusCode}";
-                return RedirectToAction(nameof(Profile));
-            }
-
-            // 2. Upload profile picture if one was selected
-            if (model.ProfileImage != null && model.ProfileImage.Length > 0)
-            {
-                using var content = new MultipartFormDataContent();
-                using var stream = model.ProfileImage.OpenReadStream();
-                content.Add(new StreamContent(stream), "file", model.ProfileImage.FileName);
-
-                var imgResponse = await _api.PostFileAsync("/api/v1/users/me/profile-picture", content);
-
-                if (!imgResponse.IsSuccessStatusCode)
+                // 1. Update text fields
+                var updateDto = new UpdateUserProfileRequestDto
                 {
-                    var errorMsg = await imgResponse.Content.ReadAsStringAsync();
-                    TempData["Error"] = $"Failed to upload image. API said: {errorMsg}";
+                    FullName = model.FullName,
+                    Phone = model.Phone,
+                    EmergencyContact = model.EmergencyContact
+                };
+
+                var updateResponse = await _api.PutAsync("/api/v1/users/me", updateDto);
+
+                if (!updateResponse.IsSuccessStatusCode)
+                {
+                    TempData["Error"] = $"Failed to update basic info. API said: {updateResponse.StatusCode}";
                     return RedirectToAction(nameof(Profile));
                 }
-            }
 
-            // 3. Fetch the updated profile to update the session
-            var updatedProfile = await _api.GetAsync<UserProfileResponseDto>("/api/v1/users/me");
-            if (updatedProfile != null)
+                // 2. Upload profile picture if one was selected
+                if (model.ProfileImage != null && model.ProfileImage.Length > 0)
+                {
+                    using var content = new MultipartFormDataContent();
+                    using var stream = model.ProfileImage.OpenReadStream();
+                    content.Add(new StreamContent(stream), "file", model.ProfileImage.FileName);
+
+                    var imgResponse = await _api.PostFileAsync("/api/v1/users/me/profile-picture", content);
+
+                    if (!imgResponse.IsSuccessStatusCode)
+                    {
+                        var errorMsg = await imgResponse.Content.ReadAsStringAsync();
+                        TempData["Error"] = $"Failed to upload image. API said: {errorMsg}";
+                        return RedirectToAction(nameof(Profile));
+                    }
+                }
+
+                // 3. Fetch the updated profile to update the session
+                var updatedProfile = await _api.GetAsync<UserProfileResponseDto>("/api/v1/users/me");
+                if (updatedProfile != null)
+                {
+                    HttpContext.Session.SetString("UserName", updatedProfile.FullName ?? "User");
+                    HttpContext.Session.SetString("ProfileImageUrl", updatedProfile.ProfileImageUrl ?? "");
+                }
+
+                TempData["Success"] = "Profile updated successfully!";
+                return RedirectToAction(nameof(Profile));
+            }
+            catch (Exception ex)
             {
-                HttpContext.Session.SetString("UserName", updatedProfile.FullName ?? "User");
-
-                // UPDATE THE PROFILE PICTURE IN SESSION
-                HttpContext.Session.SetString("ProfileImageUrl", updatedProfile.ProfileImageUrl ?? "");
+                // Catch API crashes so the MVC app doesn't close!
+                TempData["Error"] = $"Connection to API failed: {ex.Message}";
+                return RedirectToAction(nameof(Profile));
             }
-
-            TempData["Success"] = "Profile updated successfully!";
-            return RedirectToAction(nameof(Profile));
         }
 
         // POST: /Account/DeleteProfilePicture
@@ -193,12 +199,17 @@ namespace RaceDay.Mvc.Controllers
             if (HttpContext.Session.GetString("JwtToken") == null)
                 return RedirectToAction("Login");
 
-            await _api.PostAsync("/api/v1/users/me/profile-picture/delete", new { });
+            try
+            {
+                await _api.PostAsync("/api/v1/users/me/profile-picture/delete", new { });
+                HttpContext.Session.SetString("ProfileImageUrl", "");
+                TempData["Success"] = "Profile picture removed successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Connection to API failed: {ex.Message}";
+            }
 
-            // CLEAR THE PROFILE PICTURE FROM SESSION
-            HttpContext.Session.SetString("ProfileImageUrl", "");
-
-            TempData["Success"] = "Profile picture removed successfully.";
             return RedirectToAction(nameof(Profile));
         }
     }
