@@ -14,13 +14,16 @@ RaceDay is a full‑stack event management platform designed specifically for th
 
 From the iconic **Comrades Marathon** and **Two Oceans Marathon** to the **Cape Town Cycle Tour** and **Soweto Marathon**, the platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter races, track their personal performance history, and prepare for race day using live weather and route information.
 
-This repository contains the **ASP.NET Core Web API** back‑end, built with **Entity Framework Core** and **SQL Server**. The front‑end (MVC) will be built in a later phase.
+This repository contains a complete **Full-Stack** solution:
+1. **RaceDay.Api**: A RESTful **ASP.NET Core Web API** back-end built with Entity Framework Core and SQL Server.
+2. **RaceDay.Mvc**: An **ASP.NET Core MVC** front-end that consumes the API, managing state via Session and JWTs.
 
-▶️ **Demo Video Part 1:** [Watch on YouTube](https://youtu.be/i0hwWwrlrA4)
+▶️ **Demo Video Part 1 (Planning):** [Watch on YouTube](https://youtu.be/i0hwWwrlrA4)
 
-▶️ **Demo Video Part 2:** [Watch on YouTube](https://youtu.be/mqsA6EGXBHw)
+▶️ **Demo Video Part 2 (API):** [Watch on YouTube](https://youtu.be/mqsA6EGXBHw)
 
-▶️ **Demo Video Part 3:** Coming soon
+▶️ **Demo Video Part 3 (Front-End):** Coming soon
+
 ---
 
 ## 🏗️ Development Status
@@ -32,26 +35,27 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 | API Endpoint Plan | ✅ Complete |
 | Entity Models (EF Core) | ✅ Complete |
 | Database Migrations | ✅ Complete |
-| Authentication (JWT) | ✅ Complete |
-| Controllers Implementation | ✅ Complete |
-| Swagger Documentation | ✅ Complete |
-| Unit Tests | ✅ Complete |
+| Authentication (JWT & Session) | ✅ Complete |
+| API Controllers Implementation | ✅ Complete |
+| API Unit Tests (xUnit) | ✅ Complete (53 tests) |
 | CI/CD (GitHub Actions) | ✅ Complete |
-| Front‑end Integration | ⏳ Future Phase |
-| Containerisation (Docker) | ⏳ Future Phase |
-| Cloud Deployment | ⏳ Future Phase |
+| Front-end Integration (MVC) | ✅ Complete |
+| Azure Blob Storage Integration | ✅ Complete |
+| UI Styling & Theming | ⏳ In Progress |
+| Containerisation (Docker) | ⏳ In Progress |
 
 ---
 
 ## 🔥 Features Implemented
 
-- **Authentication & Authorisation** – JWT‑based Register/Login/Refresh for Organisers and Participants.
-- **User Profiles** – Unified profile management for both roles via `GET/PUT /api/v1/users/me`.
-- **Event Management** – Full CRUD for events, including race day details (weather, route, maps).
-- **Category Management** – Create categories per event (e.g. "Men Open", "Ultra Marathon") with age/gender restrictions.
-- **Registration (Entries)** – Participants can enter events, with status tracking (Pending/Confirmed/Cancelled).
-- **Results** – Organisers can upload results (finish times, positions, chip/gun times) and participants can view their performance.
-- **Race Day Preparation** – Weather forecasts and route information integrated directly into event details.
+- **Authentication & Authorisation** – JWT-based API endpoints, with secure Session-based authentication on the MVC front-end.
+- **Role-Based Navigation** – Distinct dashboards and interfaces for Organisers and Participants.
+- **Event Management** – Organisers can create, edit, and delete events, including uploading event banner images.
+- **Category Management** – Create age/distance categories per event.
+- **Registration (Entries)** – Participants can enter events (selecting a category) and withdraw. Organisers can view enrolments.
+- **Results** – Organisers can upload finish times and positions. Participants can view their personal race history and placement.
+- **User Profiles** – Users can update their details and upload profile pictures.
+- **Race Day Prep** – Weather forecasts and route information integrated into event details.
 
 ---
 
@@ -61,153 +65,87 @@ This repository contains the **ASP.NET Core Web API** back‑end, built with **E
 | :--- | :--- |
 | **Framework** | .NET 10 (LTS) |
 | **API Architecture** | ASP.NET Core Web API (RESTful) |
+| **Front-end Architecture** | ASP.NET Core MVC |
 | **ORM** | Entity Framework Core 10 |
 | **Database** | Microsoft SQL Server (LocalDB for dev) |
-| **Authentication** | JWT (JSON Web Tokens) |
+| **Authentication** | JWT (JSON Web Tokens) + Session Cookies |
+| **Cloud Storage** | Azure Blob Storage (with local file fallback) |
 | **API Documentation** | Swagger / OpenAPI (Swashbuckle) |
 | **Password Hashing** | BCrypt.Net |
-| **Unit Testing** | xUnit (53 tests) |
+| **Unit Testing** | xUnit (53 integration tests) |
 | **CI/CD** | GitHub Actions |
-| **Containerisation** | Docker (Future) |
-| **Cloud** | Azure / AWS compatible (Future) |
+| **Containerisation** | Docker (In Progress) |
 
 ---
 
-## Getting Started (Development Environment)
+## 🔐 Environment Configuration & Azure Blob Storage
+
+This project follows security best practices by **never committing secrets to source control**.
+
+### How the Storage works
+The `BlobService` is designed with a fallback strategy:
+- **Local Development with Azure:** If a valid `AzureStorage:ConnectionString` is provided in `appsettings.Development.json` (which is gitignored) or User Secrets, the application will upload images to Azure Blob Storage.
+- **Fallback (No Keys):** If the connection string is missing (e.g., when a marker clones the repo or runs Docker), the application gracefully falls back to saving images locally in the `wwwroot/uploads` folder. The UI remains fully functional.
+
+To test with your own Azure Storage, create an `appsettings.Development.json` in the `RaceDay.Api` folder and add:
+```json
+{
+  "AzureStorage": {
+    "ConnectionString": "YOUR_AZURE_CONNECTION_STRING",
+    "ContainerName": "event-images"
+  }
+}
+```
+
+---
+
+## 🚀 Getting Started (Local Development)
 
 ### Prerequisites
-
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) (with ASP.NET and web development workload)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/)
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [SQL Server Express LocalDB](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) (installed with Visual Studio's ASP.NET workload)
-- [SQL Server Object Explorer](https://learn.microsoft.com/en-us/sql/ssms/) (built into Visual Studio)
+- [SQL Server Express LocalDB](https://learn.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb)
 
 ### 1. Clone the Repository
-
 ```bash
 git clone https://github.com/mdkmotsuenyane/RaceDay.git
 cd RaceDay
 ```
 
-### 2. Configure the Connection String
-
-Open `RaceDay.Api/appsettings.json` and set `DefaultConnection` for your environment:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=RaceDayDB;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=True;"
-  },
-  "Jwt": {
-    "Key": "DEV_PLACEHOLDER_REPLACE_WITH_USER_SECRETS",
-    "Issuer": "RaceDay.Api",
-    "Audience": "RaceDay.Clients",
-    "ExpiresInSeconds": 86400
-  }
-}
-```
-
-### 3. Configure JWT Secret (User Secrets)
-
-The real JWT signing key is stored outside the repo using .NET user secrets:
-
+### 2. Configure the Database & JWT Secret
+Open `RaceDay.Api/appsettings.json` and ensure the connection string points to your LocalDB. Then, set your JWT secret via User Secrets:
 ```bash
 cd RaceDay.Api
 dotnet user-secrets init
 dotnet user-secrets set "Jwt:Key" "<your-32-plus-char-random-secret>"
 ```
 
-Generate a random key with PowerShell:
-
-```powershell
-[Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }))
-```
-
-### 4. Restore, Build, and Migrate
-
+### 3. Apply Database Migrations
 ```bash
-dotnet restore
-dotnet build
-dotnet ef database update
+dotnet ef database update -p RaceDay.Api -s RaceDay.Api
 ```
 
-This creates the `RaceDayDB` database and applies the `InitialCreate` migration, giving you all 7 tables: `User`, `Organiser`, `Participant`, `Event`, `Category`, `Entry`, `Result`.
+### 4. Run the Application
+Because the MVC app consumes the API, **both projects must run simultaneously**.
+1. In Visual Studio, right-click the **Solution** node.
+2. Select **Configure Startup Projects...**
+3. Choose **Multiple startup projects**.
+4. Set both `RaceDay.Api` and `RaceDay.Mvc` to **Start**.
+5. Click **OK** and press **F5**.
 
-### 5. Run the API
-
-```bash
-cd RaceDay.Api
-dotnet run
-```
-
-Or press **F5** in Visual Studio.
-
-Swagger UI opens automatically at `https://localhost:7100/swagger`.
+- **API Swagger:** `https://localhost:7100/swagger`
+- **MVC Web App:** `https://localhost:7159`
 
 ---
 
-## API Endpoint Plan
+## 🧪 Testing
 
-The complete API endpoint plan (39 endpoints) is documented in [`/docs/API_Plan.pdf`](./docs/API_Plan.pdf). A markdown reference is available at [`/docs/endpoints.md`](./docs/endpoints.md).
-
-It covers:
-
-- Authentication (Register, Login, Refresh)
-- User Profiles
-- Organisers CRUD
-- Participants CRUD
-- Events CRUD (including Weather & Route sub‑endpoints)
-- Categories CRUD
-- Entries (Registrations) CRUD
-- Results CRUD
-
-### Try It Out
-
-1. Run the API and open Swagger.
-2. `POST /api/v1/auth/register` to create a user.
-3. `POST /api/v1/auth/login` to get a JWT.
-4. Click **Authorize** in Swagger, paste the token.
-5. All protected endpoints now work.
-
----
-
-## Testing
-
-The API has **53 passing integration tests** covering all controllers:
-
-| Test File | Tests |
-|---|---|
-| `AuthControllerTests` | 6 |
-| `EventsControllerTests` | 6 |
-| `CategoriesControllerTests` | 9 |
-| `EntriesControllerTests` | 13 |
-| `UsersControllerTests` | 8 |
-| `ResultsControllerTests` | 11 |
-| **Total** | **53** |
+The API has **53 passing integration tests** covering all controllers, using `WebApplicationFactory<Program>` and isolated in-memory databases.
 
 Run them with:
-
 ```bash
 dotnet test RaceDay.slnx
 ```
-
-Tests use `WebApplicationFactory<Program>` with an isolated in-memory database per test class, so they don't touch SQL Server and can run in parallel.
-
----
-
-## Database Schema (ERD)
-
-The Entity Relationship Diagram is available at [`/docs/RaceDayERD.png`](./docs/RaceDayERD.png).
-
-Core entities:
-
-- **User** – Authentication and base profile (1‑to‑1 with Organiser or Participant).
-- **Organiser** – Creates and manages Events.
-- **Participant** – Enters Events via Entries.
-- **Event** – Contains weather and route details for race day prep.
-- **Category** – Distances, age groups, and gender restrictions per Event.
-- **Entry** – Junction table linking Participants to Events/Categories.
-- **Result** – Tied to an Entry for finish times and positions.
 
 ---
 
@@ -216,17 +154,25 @@ Core entities:
 ```
 RaceDay/
 ├── .github/
-│   └── workflows/            # CI workflows (docs-check.yml, api-ci.yml)
-├── docs/                     # Planning artifacts: API_Plan.pdf, RaceDayERD.png, endpoints.md
-├── RaceDay.Api/              # ASP.NET Core Web API project
-│   ├── Controllers/          # API endpoints (8 controllers)
-│   ├── Data/                 # RaceDayDbContext
-│   ├── DTOs/                 # Request/response shapes
+│   └── workflows/            # CI workflows (api-ci.yml, docs-check.yml)
+├── docs/                     # Planning artifacts (API_Plan.pdf, ERD, endpoints.md)
+├── RaceDay.Api/              # ASP.NET Core Web API back-end
+│   ├── Controllers/          # API endpoints
+│   ├── Data/                 # EF Core DbContext
+│   ├── DTOs/                 # Data Transfer Objects
 │   ├── Migrations/           # EF Core migrations
-│   ├── Models/               # EF Core entities
-│   ├── Program.cs            # App configuration (EF Core, JWT, Swagger)
+│   ├── Models/               # Entity classes
+│   ├── Services/             # BlobService (Azure)
+│   ├── Program.cs
 │   └── appsettings.json
 ├── RaceDay.Api.Tests/        # xUnit integration test project (53 tests)
+├── RaceDay.Mvc/              # ASP.NET Core MVC front-end
+│   ├── Controllers/          # UI routing and API consumption
+│   ├── Models/               # ViewModels
+│   ├── Services/             # ApiClient (HTTP + JWT forwarding)
+│   ├── Views/                # Razor UI
+│   ├── Program.cs
+│   └── appsettings.json
 ├── RaceDay.slnx              # Solution file
 └── README.md
 ```
@@ -236,35 +182,22 @@ RaceDay/
 ## ⚙️ Continuous Integration
 
 Two GitHub Actions workflows run on every push to `main`:
-
-- **`docs-check.yml`** – verifies that documentation stays in sync with the repo.
-- **`api-ci.yml`** – restores, builds, and runs all 53 tests against the API and test projects.
+- **`docs-check.yml`** – verifies that documentation stays in sync.
+- **`api-ci.yml`** – restores, builds, and runs all 53 tests against the API.
 
 [View workflows](https://github.com/mdkmotsuenyane/RaceDay/actions)
 
 ---
 
-## ⚠️ Known Limitations (Work in Progress)
-
-- ❌ No front‑end application yet (planned for Part 3).
-- ❌ No containerisation or deployment configuration.
-- ❌ No cloud storage integration (Azure Blob planned).
-- ✅ Database schema and migrations are complete and stable.
-- ✅ All API endpoints implemented and covered by tests.
-- ✅ CI runs on every push.
-
----
-
 ## ⏭️ Next Milestones
 
-1. ~~Implement JWT Authentication.~~ ✅
-2. ~~Build all controllers matching the API plan.~~ ✅
-3. ~~Test all endpoints via Swagger.~~ ✅
-4. ~~Write unit tests for API endpoints (xUnit).~~ ✅
-5. ~~Add GitHub Actions workflow for build + test.~~ ✅
-6. Build the MVC front‑end that consumes the API (Part 3).
-7. Containerise with Docker.
-8. Integrate Azure Blob Storage for image uploads.
+1. ~~Implement JWT Authentication (API).~~ ✅
+2. ~~Build all API controllers matching the plan.~~ ✅
+3. ~~Write unit/integration tests for API endpoints.~~ ✅
+4. ~~Build the MVC front-end that consumes the API.~~ ✅
+5. ~~Integrate Azure Blob Storage for image uploads.~~ ✅
+6. Polish UI with custom Bootstrap theme.
+7. Containerise the application with Docker.
 
 ---
 
@@ -277,3 +210,4 @@ This project is built for educational purposes as part of the PROG6212 module fo
 ## ✍🏾 Contributors
 
 - Mokadi Motsuenyane – ST10480772 Group 3
+```
