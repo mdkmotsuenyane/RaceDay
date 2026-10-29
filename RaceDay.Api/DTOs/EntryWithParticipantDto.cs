@@ -15,7 +15,7 @@ namespace RaceDay.DTOs
         public string? ParticipantFirstName { get; set; }
         public string? ParticipantLastName { get; set; }
         public string? ParticipantEmail { get; set; }
-
         public string? ParticipantProfileImageUrl { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

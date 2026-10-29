@@ -6,8 +6,8 @@
         <div class="card-body p-4">
             <h3 class="card-title mb-4">Edit Event</h3>
             
-            <!-- Notice the asp-route-id to pass the EventId to the controller -->
-            <form asp-action="EditEvent" asp-route-id="@ViewBag.EventId" method="post">
+            <!-- Added enctype="multipart/form-data" for file upload -->
+            <form asp-action="EditEvent" asp-route-id="@ViewBag.EventId" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -55,6 +55,13 @@
                         <label asp-for="FinishPoint" class="form-label">Finish Point</label>
                         <input asp-for="FinishPoint" class="form-control" />
                     </div>
+                </div>
+
+                <!-- ADDED FILE UPLOAD HERE -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Update Banner Image (Optional)</label>
+                    <input type="file" name="NewImage" class="form-control" accept="image/*" />
+                    <div class="form-text">Upload a new image to replace the current banner.</div>
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using RaceDay.Mvc.Models;
 using RaceDay.Mvc.Services;
 using RaceDay.DTOs;
+using System.Net.Http; // Required for MultipartFormDataContent
+using System.Net.Http.Json; // Required for ReadFromJsonAsync
+using System.IO; // Required for OpenReadStream
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -29,6 +32,15 @@ namespace RaceDay.Mvc.Controllers
             if (events != null && profile != null)
             {
                 events = events.Where(e => e.OrganiserID == profile.OrganiserID).ToList();
+
+                // GAP 2: Get entry counts for each event
+                var entryCounts = new Dictionary<int, int>();
+                foreach (var ev in events)
+                {
+                    var entries = await _api.GetAsync<List<EntryWithParticipantDto>>($"/api/v1/events/{ev.EventID}/entries");
+                    entryCounts[ev.EventID] = entries?.Count ?? 0;
+                }
+                ViewBag.EntryCounts = entryCounts;
             }
 
             return View(events ?? new List<EventResponseDto>());
@@ -116,7 +128,7 @@ namespace RaceDay.Mvc.Controllers
         // POST: /Organiser/EditEvent/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEvent(int id, UpdateEventRequestDto model)
+        public async Task<IActionResult> EditEvent(int id, UpdateEventRequestDto model, IFormFile? NewImage) // GAP 4: Added IFormFile
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
                 return RedirectToAction("Login", "Account");
@@ -131,6 +143,15 @@ namespace RaceDay.Mvc.Controllers
 
             if (response.IsSuccessStatusCode)
             {
+                // GAP 4: Upload new image if one was provided
+                if (NewImage != null && NewImage.Length > 0)
+                {
+                    using var content = new MultipartFormDataContent();
+                    using var stream = NewImage.OpenReadStream();
+                    content.Add(new StreamContent(stream), "file", NewImage.FileName);
+                    await _api.PostFileAsync($"/api/v1/events/{id}/upload-image", content);
+                }
+
                 TempData["Success"] = "Event updated successfully!";
                 return RedirectToAction(nameof(Dashboard));
             }
@@ -162,7 +183,6 @@ namespace RaceDay.Mvc.Controllers
         // CATEGORY METHODS
         // ==========================================
 
-        // GET: /Organiser/ManageCategories/5
         public async Task<IActionResult> ManageCategories(int id)
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
@@ -179,7 +199,6 @@ namespace RaceDay.Mvc.Controllers
             return View(categories ?? new List<CategoryResponseDto>());
         }
 
-        // POST: /Organiser/AddCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddCategory(int eventId, CreateCategoryRequestDto model)
@@ -206,7 +225,6 @@ namespace RaceDay.Mvc.Controllers
             return RedirectToAction(nameof(ManageCategories), new { id = eventId });
         }
 
-        // POST: /Organiser/DeleteCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCategory(int categoryId, int eventId)
@@ -228,7 +246,6 @@ namespace RaceDay.Mvc.Controllers
         // ENTRY & RESULT METHODS
         // ==========================================
 
-        // GET: /Organiser/ManageEntries/5
         public async Task<IActionResult> ManageEntries(int id)
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
@@ -245,7 +262,6 @@ namespace RaceDay.Mvc.Controllers
             return View(entries ?? new List<EntryWithParticipantDto>());
         }
 
-        // POST: /Organiser/UpdateEntry
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEntry(int entryId, int eventId, string status, int? startNumber)
@@ -269,7 +285,6 @@ namespace RaceDay.Mvc.Controllers
             return RedirectToAction(nameof(ManageEntries), new { id = eventId });
         }
 
-        // POST: /Organiser/UploadResult
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadResult(int entryId, int eventId, CreateResultRequestDto model)

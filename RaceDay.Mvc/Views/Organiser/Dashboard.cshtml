@@ -38,6 +38,8 @@
                     <th>Date</th>
                     <th>Location</th>
                     <th>Status</th>
+                    <!-- ADDED ENROLMENTS HEADER -->
+                    <th>Enrolments</th> 
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -49,12 +51,19 @@
                         <td>@ev.EventDate.ToString("dd MMM yyyy")</td>
                         <td>@ev.Location</td>
                         <td><span class="badge bg-secondary">@ev.Status</span></td>
+                        
+                        <!-- ADDED ENROLMENTS DATA -->
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                @(ViewBag.EntryCounts != null && ViewBag.EntryCounts.ContainsKey(ev.EventID) ? ViewBag.EntryCounts[ev.EventID] : 0) Entries
+                            </span>
+                        </td>
+                        
                         <td>
                             <!-- Button Group -->
                             <div class="btn-group" role="group">
                                 <a asp-controller="Events" asp-action="Details" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-primary">View</a>
                                 
-                                <!-- THIS IS THE MISSING BUTTON -->
                                 <a asp-action="ManageEntries" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-success">Entries</a>
                                 
                                 <a asp-action="ManageCategories" asp-route-id="@ev.EventID" class="btn btn-sm btn-outline-info">Categories</a>

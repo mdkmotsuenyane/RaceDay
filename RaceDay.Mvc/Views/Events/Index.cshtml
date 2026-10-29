@@ -8,9 +8,18 @@
         <h2>Upcoming Events</h2>
     </div>
 
+    <!-- SEARCH BAR ADDED HERE -->
+    <form asp-action="Index" method="get" class="mb-4">
+        <div class="input-group shadow-sm">
+            <input type="text" name="searchString" class="form-control" placeholder="Search by event name or location..." value="@ViewBag.CurrentFilter" />
+            <button type="submit" class="btn btn-primary px-4">Search</button>
+            <a asp-action="Index" class="btn btn-outline-secondary px-3">Clear</a>
+        </div>
+    </form>
+
     @if (!Model.Any())
     {
-        <div class="alert alert-info">No events found. Check back later!</div>
+        <div class="alert alert-info shadow-sm">No events found matching your search.</div>
     }
     else
     {
@@ -20,7 +29,7 @@
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         
-                        <!-- ADDED IMAGE BANNER HERE -->
+                        <!-- EVENT IMAGE BANNER -->
                         @if (!string.IsNullOrEmpty(ev.ImageUrl))
                         {
                             <img src="@ev.ImageUrl" class="card-img-top" alt="@ev.Name" style="height: 180px; object-fit: cover;">

@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay.Mvc.Services;
-using RaceDay.DTOs; // Reusing API DTOs
+using RaceDay.DTOs;
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -15,13 +18,27 @@ namespace RaceDay.Mvc.Controllers
         }
 
         // GET: /Events
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             // Fetch all events from the API
             var events = await _api.GetAsync<List<EventResponseDto>>("/api/v1/events");
 
-            // If the API is down, events might be null
-            return View(events ?? new List<EventResponseDto>());
+            if (events == null)
+                return View(new List<EventResponseDto>());
+
+            // Filtering logic based on search string
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                events = events.Where(e =>
+                    e.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase) ||
+                    (e.Location != null && e.Location.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
+
+            // Pass the current search string back to the view so the search box stays populated
+            ViewBag.CurrentFilter = searchString;
+
+            return View(events);
         }
 
         // GET: /Events/Details/5

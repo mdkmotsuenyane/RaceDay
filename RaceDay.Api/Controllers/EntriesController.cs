@@ -62,6 +62,7 @@ namespace RaceDay.Controllers
                 .Where(e => e.EventId == eventId)
                 .Include(e => e.Participant)
                     .ThenInclude(p => p!.User)
+                .Include(e => e.Category) // <--- ADDED THIS
                 .Select(e => new EntryWithParticipantDto
                 {
                     EntryID = e.EntryID,
@@ -77,11 +78,11 @@ namespace RaceDay.Controllers
                     ParticipantEmail = e.Participant != null && e.Participant.User != null
                                              ? e.Participant.User.Email
                                              : null,
-
-                    // NEW: Map the profile picture URL
                     ParticipantProfileImageUrl = e.Participant != null && e.Participant.User != null
                                              ? e.Participant.User.ProfileImageUrl
-                                             : null
+                                             : null,
+                    // NEW: Map the category name
+                    CategoryName = e.Category != null ? e.Category.Name : "Open"
                 })
                 .ToListAsync();
 
