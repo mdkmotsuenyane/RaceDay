@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Data;
@@ -21,7 +21,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/events?status=Open&location=Cape%20Town
-        // List all events with optional filters. Public.
         // ============================================================
         [HttpGet]
         [AllowAnonymous]
@@ -47,7 +46,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/events/upcoming
-        // Events with date >= today, sorted ascending. Public.
         // ============================================================
         [HttpGet("upcoming")]
         [AllowAnonymous]
@@ -66,7 +64,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/events/{id}
-        // Full event details (organiser + categories + weather + route). Public.
         // ============================================================
         [HttpGet("{id:int}")]
         [AllowAnonymous]
@@ -84,7 +81,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // GET /api/v1/events/{id}/weather
-        // Convenience endpoint: only weather fields. Public.
         // ============================================================
         [HttpGet("{id:int}/weather")]
         [AllowAnonymous]
@@ -105,7 +101,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // POST /api/v1/events
-        // Create a new event. Organiser (must have a profile).
         // ============================================================
         [HttpPost]
         [Authorize(Roles = "Organiser")]
@@ -140,7 +135,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // PUT /api/v1/events/{id}
-        // Update an existing event. Organiser (Owner).
         // ============================================================
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Organiser")]
@@ -175,8 +169,6 @@ namespace RaceDay.Controllers
 
         // ============================================================
         // DELETE /api/v1/events/{id}
-        // Delete an event. Organiser (Owner).
-        // 204 | 403 | 404 | 409 (has entries)
         // ============================================================
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Organiser")]
@@ -210,7 +202,8 @@ namespace RaceDay.Controllers
             EventDate = e.EventDate,
             StartTime = e.StartTime,
             Location = e.Location,
-            Status = e.Status
+            Status = e.Status,
+            ImageUrl = e.ImageUrl // <--- ADDED HERE
         };
 
         private static EventDetailsDto ToDetailsDto(Event e) => new EventDetailsDto
@@ -232,6 +225,7 @@ namespace RaceDay.Controllers
             Temperature = e.Temperature,
             WindSpeed = e.WindSpeed,
             Precipitation = e.Precipitation,
+            ImageUrl = e.ImageUrl, 
             Categories = e.Categories.Select(c => new CategoryResponseDto
             {
                 CategoryID = c.CategoryID,

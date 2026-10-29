@@ -19,6 +19,19 @@
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm">
+                        
+                        <!-- ADDED IMAGE BANNER HERE -->
+                        @if (!string.IsNullOrEmpty(ev.ImageUrl))
+                        {
+                            <img src="@ev.ImageUrl" class="card-img-top" alt="@ev.Name" style="height: 180px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 180px;">
+                                <span class="fs-1">🏃</span>
+                            </div>
+                        }
+
                         <div class="card-body">
                             <span class="badge bg-primary mb-2">@ev.Status</span>
                             <h5 class="card-title">@ev.Name</h5>

@@ -1,4 +1,4 @@
-﻿using RaceDay.Models;
+using RaceDay.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -52,6 +52,10 @@ namespace RaceDay.Models
         public int? WindSpeed { get; set; }
 
         public int? Precipitation { get; set; }
+
+        // ADDED THIS PROPERTY
+        [StringLength(500)]
+        public string? ImageUrl { get; set; }
 
         // Navigation
         [ForeignKey(nameof(OrganiserID))]

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace RaceDay.DTOs
@@ -22,6 +22,10 @@ namespace RaceDay.DTOs
         public decimal? Temperature { get; set; }
         public int? WindSpeed { get; set; }
         public int? Precipitation { get; set; }
+
+        // ADDED THIS LINE:
+        public string? ImageUrl { get; set; }
+
         public List<CategoryResponseDto> Categories { get; set; } = new();
     }
 }
