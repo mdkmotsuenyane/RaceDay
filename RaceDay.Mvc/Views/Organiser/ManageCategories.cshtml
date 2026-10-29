@@ -1,8 +1,3 @@
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
 @model List<RaceDay.DTOs.CategoryResponseDto>
 @{
     ViewBag.Title = "Manage Categories";
@@ -43,10 +38,17 @@
                                 <div>
                                     <h5 class="mb-1">@cat.Name</h5>
                                     <small class="text-muted">
-                                        Distance: @cat.Distance km | Age: @cat.MinAge-@cat.MaxAge | 
+                                        Distance: @cat.Distance km | Age: @cat.MinAge-@cat.MaxAge |
                                         Gender: @(string.IsNullOrEmpty(cat.Gender) ? "Open" : cat.Gender)
                                     </small>
                                 </div>
+                                <!-- DELETE FORM ADDED HERE -->
+                                <form asp-action="DeleteCategory" method="post" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="categoryId" value="@cat.CategoryID" />
+                                    <input type="hidden" name="eventId" value="@ViewBag.EventId" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
                             </li>
                         }
                     }
@@ -60,16 +62,17 @@
                 <div class="card-header bg-primary text-white">Add New Category</div>
                 <div class="card-body">
                     <form asp-action="AddCategory" method="post">
+                        @Html.AntiForgeryToken() <!-- TOKEN ADDED HERE -->
                         <input type="hidden" name="eventId" value="@ViewBag.EventId" />
-                        
+
                         <div class="mb-3">
                             <label class="form-label">Category Name</label>
                             <input type="text" name="Name" class="form-control" placeholder="e.g. Men Open 42km" required />
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label">Distance (km)</label>
-                            <input type="number" step="0.1" name="Distance" class="form-control" placeholder="42.2" required />
+                            <input type="text" name="Distance" class="form-control" placeholder="42.2" required />
                         </div>
 
                         <div class="row">

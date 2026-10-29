@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RaceDay.Mvc.Models; // Need this for CreateEventViewModel
+using RaceDay.Mvc.Models;
 using RaceDay.Mvc.Services;
 using RaceDay.DTOs;
 
@@ -53,7 +53,6 @@ namespace RaceDay.Mvc.Controllers
 
             if (!ModelState.IsValid) return View(model);
 
-            // 1. Map ViewModel to API DTO and create the event
             var dto = new CreateEventRequestDto
             {
                 Name = model.Name,
@@ -70,18 +69,13 @@ namespace RaceDay.Mvc.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                // 2. If successful, get the new EventID
                 var createdEvent = await response.Content.ReadFromJsonAsync<EventResponseDto>();
 
-                // 3. If an image was uploaded, send it to the Blob Storage API
                 if (model.ImageFile != null && model.ImageFile.Length > 0 && createdEvent != null)
                 {
                     using var content = new MultipartFormDataContent();
                     using var stream = model.ImageFile.OpenReadStream();
-
                     content.Add(new StreamContent(stream), "file", model.ImageFile.FileName);
-
-                    // Call the new API endpoint we created
                     await _api.PostFileAsync($"/api/v1/events/{createdEvent.EventID}/upload-image", content);
                 }
 
@@ -165,7 +159,7 @@ namespace RaceDay.Mvc.Controllers
         }
 
         // ==========================================
-        // NEW METHODS FOR CATEGORIES
+        // CATEGORY METHODS
         // ==========================================
 
         // GET: /Organiser/ManageCategories/5
@@ -195,7 +189,9 @@ namespace RaceDay.Mvc.Controllers
 
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Please fill in all required fields correctly.";
+                // Find out exactly WHY it failed
+                var errors = string.Join(" | ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                TempData["Error"] = "Validation failed: " + errors;
                 return RedirectToAction(nameof(ManageCategories), new { id = eventId });
             }
 
@@ -204,7 +200,28 @@ namespace RaceDay.Mvc.Controllers
             if (response.IsSuccessStatusCode)
                 TempData["Success"] = "Category added successfully!";
             else
-                TempData["Error"] = "Failed to add category.";
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = $"API Error: {response.StatusCode}";
+            }
+
+            return RedirectToAction(nameof(ManageCategories), new { id = eventId });
+        }
+
+        // POST: /Organiser/DeleteCategory
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int categoryId, int eventId)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Organiser")
+                return RedirectToAction("Login", "Account");
+
+            var response = await _api.DeleteAsync($"/api/v1/categories/{categoryId}");
+
+            if (response.IsSuccessStatusCode)
+                TempData["Success"] = "Category deleted successfully.";
+            else
+                TempData["Error"] = "Failed to delete category. It might have participants registered.";
 
             return RedirectToAction(nameof(ManageCategories), new { id = eventId });
         }
