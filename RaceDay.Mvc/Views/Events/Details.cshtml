@@ -8,6 +8,13 @@
         <!-- Main Event Info -->
         <div class="col-md-8">
             <div class="card shadow-sm mb-4">
+                
+                <!-- ADDED THE EVENT BANNER IMAGE HERE -->
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name Banner" style="max-height: 400px; object-fit: cover;">
+                }
+
                 <div class="card-body">
                     <span class="badge bg-success float-end">@Model.Status</span>
                     <h1 class="card-title">@Model.Name</h1>
