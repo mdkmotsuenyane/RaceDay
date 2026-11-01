@@ -63,6 +63,13 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Automatically apply migrations on startup (CRUCIAL FOR DOCKER)
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
+    db.Database.Migrate();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

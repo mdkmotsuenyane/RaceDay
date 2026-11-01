@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  raceday-api:
+    image: raceday-api
+    build:
+      context: .
+      dockerfile: RaceDay.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=db;Database=RaceDayDB;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+      - Jwt__Key=ThisIsAVeryLongAndSecureJwtSigningKeyForDocker123!
+      - Jwt__Issuer=RaceDay.Api
+      - Jwt__Audience=RaceDay.Clients
+    ports:
+      - "7100:8080"
+    depends_on:
+      - db
+
+  raceday-mvc:
+    image: raceday-mvc
+    build:
+      context: .
+      dockerfile: RaceDay.Mvc/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ApiSettings__BaseUrl=http://raceday-api:8080/
+    ports:
+      - "7159:8080"
+    depends_on:
+      - raceday-api
+
+volumes:
+  sqldata:
