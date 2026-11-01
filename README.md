@@ -41,8 +41,8 @@ This repository contains a complete **Full-Stack** solution:
 | CI/CD (GitHub Actions) | ✅ Complete |
 | Front-end Integration (MVC) | ✅ Complete |
 | Azure Blob Storage Integration | ✅ Complete |
-| UI Styling & Theming | ⏳ In Progress |
-| Containerisation (Docker) | ⏳ In Progress |
+| UI Styling & Theming | ✅ Complete |
+| Containerisation (Docker) | ✅ Complete |
 
 ---
 
@@ -74,7 +74,29 @@ This repository contains a complete **Full-Stack** solution:
 | **Password Hashing** | BCrypt.Net |
 | **Unit Testing** | xUnit (53 integration tests) |
 | **CI/CD** | GitHub Actions |
-| **Containerisation** | Docker (In Progress) |
+| **Containerisation** | Docker & Docker Compose |
+
+---
+
+## 🐳 Docker Setup
+
+The application is fully containerised using Docker. Both the API and the MVC front-end, along with a SQL Server database, can be started with a single command.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) must be installed and running.
+
+### Run the application
+Navigate to the root of the repository (where `docker-compose.yml` is located) and run:
+
+```bash
+docker compose up --build
+```
+
+### Access the containers
+- **MVC Web App:** http://localhost:7159
+- **API Swagger:** http://localhost:7100/swagger
+
+*(Note: The API is configured to automatically apply Entity Framework migrations on startup, so the database schema will be created automatically inside the container).*
 
 ---
 
@@ -174,6 +196,7 @@ RaceDay/
 │   ├── Program.cs
 │   └── appsettings.json
 ├── RaceDay.slnx              # Solution file
+├── docker-compose.yml        # Multi-container orchestration
 └── README.md
 ```
 
@@ -196,8 +219,8 @@ Two GitHub Actions workflows run on every push to `main`:
 3. ~~Write unit/integration tests for API endpoints.~~ ✅
 4. ~~Build the MVC front-end that consumes the API.~~ ✅
 5. ~~Integrate Azure Blob Storage for image uploads.~~ ✅
-6. Polish UI with custom Bootstrap theme.
-7. Containerise the application with Docker.
+6. ~~Polish UI with custom Bootstrap theme.~~ ✅
+7. ~~Containerise the application with Docker.~~ ✅
 
 ---
 
