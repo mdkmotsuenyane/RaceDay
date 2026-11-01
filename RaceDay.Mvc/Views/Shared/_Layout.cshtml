@@ -3,17 +3,109 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - RaceDay</title>
+    <title>@ViewData["Title"] - iNDLELA</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RaceDay.Mvc.styles.css" asp-append-version="true" />
+
+    <!-- Custom Sporty Theme -->
+    <style>
+            :root {
+                --indela-primary: #FF5722; /* Energetic Orange */
+                --indela-dark: #1A1A2E; /* Deep Navy/Black */
+                --indela-light: #F8F9FA;
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: var(--indela-light);
+                color: #333;
+            }
+
+            h1, h2, h3, h4, h5, h6, .navbar-brand {
+                font-family: 'Montserrat', sans-serif;
+                font-weight: 800;
+            }
+
+            /* Navbar */
+            .navbar {
+                background-color: #ffffff !important;
+                border-bottom: 4px solid var(--indela-primary) !important;
+            }
+
+            .navbar-brand {
+                color: var(--indela-dark) !important;
+                font-size: 1.5rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+                .navbar-brand span {
+                    color: var(--indela-primary);
+                }
+
+            .nav-link {
+                font-weight: 600;
+                transition: color 0.2s;
+            }
+
+                .nav-link:hover {
+                    color: var(--indela-primary) !important;
+                }
+
+            /* Buttons */
+            .btn-primary {
+                background-color: var(--indela-primary);
+                border-color: var(--indela-primary);
+                font-weight: 600;
+                border-radius: 50px;
+                padding: 8px 24px;
+            }
+
+                .btn-primary:hover {
+                    background-color: #E64A19;
+                    border-color: #E64A19;
+                }
+
+            .btn-success {
+                background-color: #00BFA6;
+                border-color: #00BFA6;
+                border-radius: 50px;
+            }
+
+            /* Cards */
+            .card {
+                border: none;
+                border-radius: 15px;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+                .card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+                }
+
+            /* Footer */
+            .footer {
+                background-color: #ffffff;
+                border-top: 1px solid #eee;
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-4">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index">🏃 RaceDay</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    🏃‍♂️ i<span>NDLELA</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -32,16 +124,16 @@
                         @if (Context.Session.GetString("UserRole") == "Organiser")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-primary fw-bold" asp-controller="Organiser" asp-action="Dashboard">My Dashboard</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Organiser" asp-action="Dashboard">My Dashboard</a>
                             </li>
                         }
                         @if (Context.Session.GetString("UserRole") == "Participant")
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-primary fw-bold" asp-controller="Participant" asp-action="Dashboard">My Entries</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="Dashboard">My Entries</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-primary fw-bold" asp-controller="Participant" asp-action="MyResults">My Results</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="MyResults">My Results</a>
                             </li>
                         }
                     </ul>
@@ -51,14 +143,14 @@
                         @if (Context.Session.GetString("JwtToken") != null)
                         {
                             var profilePic = Context.Session.GetString("ProfileImageUrl");
-                            
+
                             <li class="nav-item me-3">
                                 <a class="nav-link text-dark fw-bold p-0 d-flex align-items-center text-decoration-none" asp-controller="Account" asp-action="Profile" title="Click to edit profile">
-                                    
+
                                     <!-- Profile Picture or Fallback Icon -->
                                     @if (!string.IsNullOrEmpty(profilePic))
                                     {
-                                        <img src="@profilePic" class="rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #0d6efd;" alt="Avatar" />
+                                        <img src="@profilePic" class="rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--indela-primary);" alt="Avatar" />
                                     }
                                     else
                                     {
@@ -69,15 +161,15 @@
 
                                     <!-- Name and Role -->
                                     <div class="d-flex flex-column text-start">
-                                        <span>Hello, @Context.Session.GetString("UserName")!</span>
-                                        <span class="badge bg-secondary mt-1" style="font-size: 0.7em; align-self: flex-start;">@Context.Session.GetString("UserRole")</span>
+                                        <span style="font-family: 'Inter', sans-serif; font-size: 0.9rem;">Hello, @Context.Session.GetString("UserName")!</span>
+                                        <span class="badge mt-1" style="background-color: var(--indela-dark); font-size: 0.7em; align-self: flex-start;">@Context.Session.GetString("UserRole")</span>
                                     </div>
                                 </a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" style="border-radius: 50px;">Logout</button>
                                 </form>
                             </li>
                         }
@@ -86,8 +178,8 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+                            <li class="nav-item ms-2">
+                                <a class="btn btn-primary text-white" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         }
                     </ul>
@@ -101,9 +193,9 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted mt-5">
-        <div class="container">
-            &copy; 2026 - RaceDay 
+    <footer class="footer text-muted mt-5 py-3">
+        <div class="container text-center">
+            &copy; 2026 - <strong>iNDLELA</strong> - PROG6212 Project
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

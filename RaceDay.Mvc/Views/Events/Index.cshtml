@@ -8,18 +8,18 @@
         <h2>Upcoming Events</h2>
     </div>
 
-    <!-- SEARCH BAR ADDED HERE -->
+    <!-- Search Bar -->
     <form asp-action="Index" method="get" class="mb-4">
-        <div class="input-group shadow-sm">
+        <div class="input-group">
             <input type="text" name="searchString" class="form-control" placeholder="Search by event name or location..." value="@ViewBag.CurrentFilter" />
-            <button type="submit" class="btn btn-primary px-4">Search</button>
-            <a asp-action="Index" class="btn btn-outline-secondary px-3">Clear</a>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
         </div>
     </form>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info shadow-sm">No events found matching your search.</div>
+        <div class="alert alert-info">No events found. Check back later!</div>
     }
     else
     {
@@ -29,10 +29,14 @@
                 <div class="col">
                     <div class="card h-100 shadow-sm">
                         
-                        <!-- EVENT IMAGE BANNER -->
+                        <!-- Image handling (Azure or Local) -->
                         @if (!string.IsNullOrEmpty(ev.ImageUrl))
                         {
-                            <img src="@ev.ImageUrl" class="card-img-top" alt="@ev.Name" style="height: 180px; object-fit: cover;">
+                            var imageSrc = ev.ImageUrl.StartsWith("/uploads/") 
+                                ? $"https://localhost:7100{ev.ImageUrl}" 
+                                : ev.ImageUrl;
+
+                            <img src="@imageSrc" class="card-img-top" alt="@ev.Name" style="height: 180px; object-fit: cover;">
                         }
                         else
                         {

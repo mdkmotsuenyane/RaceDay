@@ -10,14 +10,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Database Connection
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// 2. Add Controllers
 builder.Services.AddControllers();
 
+// 3. Register the BlobService (Handles Azure and Local Fallback)
 builder.Services.AddScoped<RaceDay.Api.Services.BlobService>();
 
+// 4. JWT Authentication Configuration
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key missing from config");
 
@@ -40,6 +44,7 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+// 5. Swagger Configuration with JWT Bearer Support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -63,22 +68,25 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Automatically apply migrations on startup (CRUCIAL FOR DOCKER)
+// 6. AUTOMATIC DATABASE MIGRATIONS (CRUCIAL FOR DOCKER)
+// This ensures the database tables are created automatically when the container starts.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
     db.Database.Migrate();
 }
 
+// 7. HTTP Request Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Commented out for Docker/HTTP compatibility
+// app.UseHttpsRedirection();
 
-// THIS LINE IS CRUCIAL FOR THE LOCAL FALLBACK IMAGES TO DISPLAY:
+// THIS IS CRUCIAL FOR THE LOCAL FALLBACK IMAGES TO DISPLAY:
 app.UseStaticFiles();
 
 app.UseAuthentication();
@@ -86,4 +94,5 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
+// Exposes the auto-generated Program class to the test project.
 public partial class Program { }
