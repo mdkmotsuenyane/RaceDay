@@ -1,18 +1,16 @@
-# RaceDay
+# iNDLELA (RaceDay Architecture)
 
 ![RaceDay.Api CI](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/api-ci.yml/badge.svg)
 ![docs-check](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/docs-check.yml/badge.svg)
 
-> **🚧 WORK IN PROGRESS – ACADEMIC PROJECT**  
-> This project is currently in active development as part of the PROG6212 module. It is not yet deployed to production. Features, endpoints, and schema are subject to change until final submission.
 
 ---
 
 ## Overview
 
-RaceDay is a full‑stack event management platform designed specifically for the South African road running, walking, and cycling community.
+**iNDLELA** (The Path) is a full-stack event management platform designed specifically for the South African road running, walking, and cycling community. 
 
-From the iconic **Comrades Marathon** and **Two Oceans Marathon** to the **Cape Town Cycle Tour** and **Soweto Marathon**, the platform allows Event Organisers to create and manage events, categories, and participant results, while Participants can browse upcoming events, enter races, track their personal performance history, and prepare for race day using live weather and route information.
+> *Note: The technical codebase, API, and database are named `RaceDay` as per the project specification. However, the user-facing platform has been branded as **iNDLELA** to create a strong, energetic sporting identity, fulfilling the UI/UX branding requirements of the module.*
 
 This repository contains a complete **Full-Stack** solution:
 1. **RaceDay.Api**: A RESTful **ASP.NET Core Web API** back-end built with Entity Framework Core and SQL Server.
@@ -22,7 +20,7 @@ This repository contains a complete **Full-Stack** solution:
 
 ▶️ **Demo Video Part 2 (API):** [Watch on YouTube](https://youtu.be/mqsA6EGXBHw)
 
-▶️ **Demo Video Part 3 (Front-End):** Coming soon
+▶️ **Demo Video Part 3 (Front-End & Docker):** Coming soon
 
 ---
 
@@ -41,7 +39,7 @@ This repository contains a complete **Full-Stack** solution:
 | CI/CD (GitHub Actions) | ✅ Complete |
 | Front-end Integration (MVC) | ✅ Complete |
 | Azure Blob Storage Integration | ✅ Complete |
-| UI Styling & Theming | ✅ Complete |
+| UI Styling & Theming (iNDLELA) | ✅ Complete |
 | Containerisation (Docker) | ✅ Complete |
 
 ---
@@ -93,10 +91,10 @@ docker compose up --build
 ```
 
 ### Access the containers
-- **MVC Web App:** http://localhost:7159
+- **iNDLELA Web App:** http://localhost:7159
 - **API Swagger:** http://localhost:7100/swagger
 
-*(Note: The API is configured to automatically apply Entity Framework migrations on startup, so the database schema will be created automatically inside the container).*
+*(Note: The API is configured to automatically apply Entity Framework migrations on startup, so the database schema will be created automatically inside the container. Please allow a few seconds for SQL Server to boot up before the API connects).*
 
 ---
 
@@ -105,9 +103,9 @@ docker compose up --build
 This project follows security best practices by **never committing secrets to source control**.
 
 ### How the Storage works
-The `BlobService` is designed with a fallback strategy:
-- **Local Development with Azure:** If a valid `AzureStorage:ConnectionString` is provided in `appsettings.Development.json` (which is gitignored) or User Secrets, the application will upload images to Azure Blob Storage.
-- **Fallback (No Keys):** If the connection string is missing (e.g., when a marker clones the repo or runs Docker), the application gracefully falls back to saving images locally in the `wwwroot/uploads` folder. The UI remains fully functional.
+The `BlobService` is designed with a robust fallback strategy:
+- **Local Development with Azure:** If a valid `AzureStorage:ConnectionString` is provided in `appsettings.Development.json` (which is gitignored) or User Secrets, the application will upload images directly to Azure Blob Storage.
+- **Fallback (No Keys):** If the connection string is missing (e.g., when a marker clones the repo or runs Docker), the application gracefully catches the error and falls back to saving images locally in the `wwwroot/uploads` folder. The UI remains fully functional.
 
 To test with your own Azure Storage, create an `appsettings.Development.json` in the `RaceDay.Api` folder and add:
 ```json
@@ -155,8 +153,8 @@ Because the MVC app consumes the API, **both projects must run simultaneously**.
 4. Set both `RaceDay.Api` and `RaceDay.Mvc` to **Start**.
 5. Click **OK** and press **F5**.
 
-- **API Swagger:** `https://localhost:7100/swagger`
-- **MVC Web App:** `https://localhost:7159`
+- **API Swagger:** `http://localhost:5100/swagger`
+- **iNDLELA Web App:** `http://localhost:5103`
 
 ---
 
@@ -184,15 +182,15 @@ RaceDay/
 │   ├── DTOs/                 # Data Transfer Objects
 │   ├── Migrations/           # EF Core migrations
 │   ├── Models/               # Entity classes
-│   ├── Services/             # BlobService (Azure)
+│   ├── Services/             # BlobService (Azure & Local Fallback)
 │   ├── Program.cs
 │   └── appsettings.json
 ├── RaceDay.Api.Tests/        # xUnit integration test project (53 tests)
-├── RaceDay.Mvc/              # ASP.NET Core MVC front-end
+├── RaceDay.Mvc/              # ASP.NET Core MVC front-end (iNDLELA Brand)
 │   ├── Controllers/          # UI routing and API consumption
 │   ├── Models/               # ViewModels
 │   ├── Services/             # ApiClient (HTTP + JWT forwarding)
-│   ├── Views/                # Razor UI
+│   ├── Views/                # Razor UI (Custom iNDLELA Theme)
 │   ├── Program.cs
 │   └── appsettings.json
 ├── RaceDay.slnx              # Solution file
@@ -209,18 +207,6 @@ Two GitHub Actions workflows run on every push to `main`:
 - **`api-ci.yml`** – restores, builds, and runs all 53 tests against the API.
 
 [View workflows](https://github.com/mdkmotsuenyane/RaceDay/actions)
-
----
-
-## ⏭️ Next Milestones
-
-1. ~~Implement JWT Authentication (API).~~ ✅
-2. ~~Build all API controllers matching the plan.~~ ✅
-3. ~~Write unit/integration tests for API endpoints.~~ ✅
-4. ~~Build the MVC front-end that consumes the API.~~ ✅
-5. ~~Integrate Azure Blob Storage for image uploads.~~ ✅
-6. ~~Polish UI with custom Bootstrap theme.~~ ✅
-7. ~~Containerise the application with Docker.~~ ✅
 
 ---
 
