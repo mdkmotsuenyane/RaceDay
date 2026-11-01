@@ -9,7 +9,7 @@
         <div class="col-md-8">
             <div class="card shadow-sm mb-4">
                 
-                <!-- ADDED THE EVENT BANNER IMAGE HERE -->
+                <!-- EVENT BANNER IMAGE -->
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name Banner" style="max-height: 400px; object-fit: cover;">
@@ -94,15 +94,25 @@
                 </div>
             </div>
 
-            @if (!string.IsNullOrEmpty(Model.MapUrl))
-            {
-                <div class="card shadow-sm">
-                    <div class="card-header">🗺️ Route Map</div>
-                    <div class="card-body text-center">
-                        <a href="@Model.MapUrl" target="_blank" class="btn btn-outline-secondary w-100">View Map</a>
-                    </div>
-                </div>
+            <!-- FIXED ROUTE MAP BLOCK -->
+            @{
+                // If the URL is empty or contains the fake 'example.com', generate a real Google Maps search link
+                var mapLink = Model.MapUrl;
+                if (string.IsNullOrEmpty(mapLink) || mapLink.Contains("example.com"))
+                {
+                    var searchQuery = Uri.EscapeDataString($"{Model.Name} {Model.Location} {Model.StartPoint}");
+                    mapLink = $"https://www.google.com/maps/search/?api=1&query={searchQuery}";
+                }
             }
+
+            <div class="card shadow-sm">
+                <div class="card-header">🗺️ Route Map</div>
+                <div class="card-body text-center">
+                    <a href="@mapLink" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary w-100">
+                        Open in Google Maps
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

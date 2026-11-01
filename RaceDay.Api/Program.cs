@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using RaceDay.Data;
-using RaceDay.Api.Services; // Added this for BlobService
+using RaceDay.Api.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,11 +16,7 @@ builder.Services.AddDbContext<RaceDayDbContext>(options =>
 
 builder.Services.AddControllers();
 
-// ============================================================
-// THIS IS THE MISSING LINE YOU NEED:
-// ============================================================
 builder.Services.AddScoped<RaceDay.Api.Services.BlobService>();
-
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key missing from config");
@@ -74,10 +70,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// THIS LINE IS CRUCIAL FOR THE LOCAL FALLBACK IMAGES TO DISPLAY:
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-// Exposes the auto-generated Program class to the test project.
 public partial class Program { }

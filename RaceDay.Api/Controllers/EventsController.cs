@@ -168,6 +168,34 @@ namespace RaceDay.Controllers
         }
 
         // ============================================================
+        // POST /api/v1/events/{id}/upload-image
+        // ============================================================
+        [HttpPost("{id:int}/upload-image")]
+        [Authorize(Roles = "Organiser")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file, [FromServices] RaceDay.Api.Services.BlobService blobService)
+        {
+            var ev = await _context.Events.FindAsync(id);
+            if (ev == null) return NotFound();
+
+            var organiserId = await GetCurrentOrganiserID();
+            if (organiserId == null || ev.OrganiserID != organiserId.Value)
+                return Forbid();
+
+            if (file == null || file.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // 1. Upload the file
+            using var stream = file.OpenReadStream();
+            var imageUrl = await blobService.UploadAsync(stream, file.FileName);
+
+            // 2. Save the URL to the database
+            ev.ImageUrl = imageUrl;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { imageUrl });
+        }
+
+        // ============================================================
         // DELETE /api/v1/events/{id}
         // ============================================================
         [HttpDelete("{id:int}")]
@@ -203,7 +231,7 @@ namespace RaceDay.Controllers
             StartTime = e.StartTime,
             Location = e.Location,
             Status = e.Status,
-            ImageUrl = e.ImageUrl // <--- ADDED HERE
+            ImageUrl = e.ImageUrl
         };
 
         private static EventDetailsDto ToDetailsDto(Event e) => new EventDetailsDto
@@ -225,7 +253,7 @@ namespace RaceDay.Controllers
             Temperature = e.Temperature,
             WindSpeed = e.WindSpeed,
             Precipitation = e.Precipitation,
-            ImageUrl = e.ImageUrl, 
+            ImageUrl = e.ImageUrl,
             Categories = e.Categories.Select(c => new CategoryResponseDto
             {
                 CategoryID = c.CategoryID,
