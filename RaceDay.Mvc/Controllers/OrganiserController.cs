@@ -2,12 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using RaceDay.Mvc.Models;
 using RaceDay.Mvc.Services;
 using RaceDay.DTOs;
-using System.Net.Http; // Required for MultipartFormDataContent
-using System.Net.Http.Json; // Required for ReadFromJsonAsync
-using System.IO; // Required for OpenReadStream
 
 namespace RaceDay.Mvc.Controllers
 {
@@ -76,7 +74,11 @@ namespace RaceDay.Mvc.Controllers
                 StartPoint = model.StartPoint,
                 FinishPoint = model.FinishPoint,
 
-                // ADDED WEATHER MAPPINGS
+                // ADDED MAP & ELEVATION MAPPINGS
+                MapUrl = model.MapUrl,
+                ElevationUrl = model.ElevationUrl,
+
+                // WEATHER MAPPINGS
                 WeatherForecast = model.WeatherForecast,
                 Temperature = model.Temperature,
                 WindSpeed = model.WindSpeed,
@@ -126,7 +128,11 @@ namespace RaceDay.Mvc.Controllers
                 StartPoint = ev.StartPoint,
                 FinishPoint = ev.FinishPoint,
 
-                // ADDED WEATHER MAPPINGS
+                // ADDED MAP & ELEVATION MAPPINGS
+                MapUrl = ev.MapUrl,
+                ElevationUrl = ev.ElevationUrl,
+
+                // WEATHER MAPPINGS
                 WeatherForecast = ev.WeatherForecast,
                 Temperature = ev.Temperature,
                 WindSpeed = ev.WindSpeed,
@@ -151,7 +157,7 @@ namespace RaceDay.Mvc.Controllers
                 return View(model);
             }
 
-            // The model (UpdateEventRequestDto) already contains the weather fields from the form binding
+            // The model automatically maps the Map/Elevation/Weather fields via binding
             var response = await _api.PutAsync($"/api/v1/events/{id}", model);
 
             if (response.IsSuccessStatusCode)

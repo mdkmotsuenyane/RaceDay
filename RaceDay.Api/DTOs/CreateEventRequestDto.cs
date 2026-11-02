@@ -29,7 +29,14 @@ namespace RaceDay.DTOs
         [StringLength(255)]
         public string? FinishPoint { get; set; }
 
-        // --- ADDED THESE PROPERTIES ---
+        // --- ADDED THESE TWO PROPERTIES ---
+        [StringLength(500)]
+        public string? MapUrl { get; set; }
+
+        [StringLength(500)]
+        public string? ElevationUrl { get; set; }
+        // ----------------------------------
+
         [StringLength(50)]
         public string? WeatherForecast { get; set; }
 

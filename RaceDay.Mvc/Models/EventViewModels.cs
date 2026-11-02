@@ -29,6 +29,16 @@ namespace RaceDay.Mvc.Models
         public string? StartPoint { get; set; }
         public string? FinishPoint { get; set; }
 
+        // --- ADDED MAP AND ELEVATION URLS ---
+        [Url(ErrorMessage = "Must be a valid URL (e.g., https://...)")]
+        [Display(Name = "Google Maps URL")]
+        public string? MapUrl { get; set; }
+
+        [Url(ErrorMessage = "Must be a valid URL (e.g., https://...)")]
+        [Display(Name = "Elevation Profile URL")]
+        public string? ElevationUrl { get; set; }
+        // ------------------------------------
+
         [StringLength(50)]
         [Display(Name = "Weather Forecast")]
         public string? WeatherForecast { get; set; }
@@ -44,7 +54,6 @@ namespace RaceDay.Mvc.Models
         [Range(0, 500, ErrorMessage = "Precipitation must be between 0 and 500")]
         [Display(Name = "Precipitation (mm)")]
         public int? Precipitation { get; set; }
-        // -----------------------------
 
         [Display(Name = "Event Banner Image")]
         public IFormFile? ImageFile { get; set; }
