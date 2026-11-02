@@ -33,7 +33,7 @@ namespace RaceDay.Mvc.Controllers
             {
                 events = events.Where(e => e.OrganiserID == profile.OrganiserID).ToList();
 
-                // GAP 2: Get entry counts for each event
+                // Get entry counts for each event
                 var entryCounts = new Dictionary<int, int>();
                 foreach (var ev in events)
                 {
@@ -74,7 +74,13 @@ namespace RaceDay.Mvc.Controllers
                 Location = model.Location,
                 Status = "Open",
                 StartPoint = model.StartPoint,
-                FinishPoint = model.FinishPoint
+                FinishPoint = model.FinishPoint,
+
+                // ADDED WEATHER MAPPINGS
+                WeatherForecast = model.WeatherForecast,
+                Temperature = model.Temperature,
+                WindSpeed = model.WindSpeed,
+                Precipitation = model.Precipitation
             };
 
             var response = await _api.PostAsync("/api/v1/events", dto);
@@ -118,7 +124,13 @@ namespace RaceDay.Mvc.Controllers
                 Location = ev.Location,
                 Status = ev.Status,
                 StartPoint = ev.StartPoint,
-                FinishPoint = ev.FinishPoint
+                FinishPoint = ev.FinishPoint,
+
+                // ADDED WEATHER MAPPINGS
+                WeatherForecast = ev.WeatherForecast,
+                Temperature = ev.Temperature,
+                WindSpeed = ev.WindSpeed,
+                Precipitation = ev.Precipitation
             };
 
             ViewBag.EventId = id;
@@ -128,7 +140,7 @@ namespace RaceDay.Mvc.Controllers
         // POST: /Organiser/EditEvent/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditEvent(int id, UpdateEventRequestDto model, IFormFile? NewImage) // GAP 4: Added IFormFile
+        public async Task<IActionResult> EditEvent(int id, UpdateEventRequestDto model, IFormFile? NewImage)
         {
             if (HttpContext.Session.GetString("UserRole") != "Organiser")
                 return RedirectToAction("Login", "Account");
@@ -139,11 +151,11 @@ namespace RaceDay.Mvc.Controllers
                 return View(model);
             }
 
+            // The model (UpdateEventRequestDto) already contains the weather fields from the form binding
             var response = await _api.PutAsync($"/api/v1/events/{id}", model);
 
             if (response.IsSuccessStatusCode)
             {
-                // GAP 4: Upload new image if one was provided
                 if (NewImage != null && NewImage.Length > 0)
                 {
                     using var content = new MultipartFormDataContent();

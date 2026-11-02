@@ -33,7 +33,7 @@
                         @if (!string.IsNullOrEmpty(ev.ImageUrl))
                         {
                             var imageSrc = ev.ImageUrl.StartsWith("/uploads/") 
-                                ? $"https://localhost:7100{ev.ImageUrl}" 
+                                ? $"http://localhost:7100{ev.ImageUrl}" 
                                 : ev.ImageUrl;
 
                             <img src="@imageSrc" class="card-img-top" alt="@ev.Name" style="height: 180px; object-fit: cover;">

@@ -9,10 +9,14 @@
         <div class="col-md-8">
             <div class="card shadow-sm mb-4">
                 
-                <!-- EVENT BANNER IMAGE -->
+                <!-- EVENT BANNER IMAGE (FIXED FOR DOCKER) -->
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
-                    <img src="@Model.ImageUrl" class="card-img-top" alt="@Model.Name Banner" style="max-height: 400px; object-fit: cover;">
+                    var displayImage = Model.ImageUrl.StartsWith("/uploads/") 
+                        ? $"http://localhost:7100{Model.ImageUrl}" 
+                        : Model.ImageUrl;
+
+                    <img src="@displayImage" class="card-img-top" alt="@Model.Name Banner" style="max-height: 400px; object-fit: cover;">
                 }
 
                 <div class="card-body">

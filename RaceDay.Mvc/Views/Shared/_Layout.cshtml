@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap Icons (NEW) -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <script type="importmap"></script>
@@ -109,7 +109,6 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-4">
             <div class="container-fluid">
-                <!-- UPDATED BRAND WITH LOGO -->
                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/images/logo.png" alt="iNDLELA Logo" style="height: 45px; margin-right: 10px;" />
                     <span>i<span>NDLELA</span></span>
@@ -163,18 +162,25 @@
                         {
                             var profilePic = Context.Session.GetString("ProfileImageUrl");
 
+                            // DOCKER FIX: If it's a local upload, point it to the API container
+                            var displayPic = profilePic;
+                            if (!string.IsNullOrEmpty(profilePic) && profilePic.StartsWith("/uploads/"))
+                            {
+                                displayPic = $"http://localhost:7100{profilePic}";
+                            }
+
                             <li class="nav-item me-3">
                                 <a class="nav-link text-dark fw-bold p-0 d-flex align-items-center text-decoration-none" asp-controller="Account" asp-action="Profile" title="Click to edit profile">
 
                                     <!-- Profile Picture or Fallback Icon -->
-                                    @if (!string.IsNullOrEmpty(profilePic))
+                                    @if (!string.IsNullOrEmpty(displayPic))
                                     {
-                                        <img src="@profilePic" class="rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--indela-primary);" alt="Avatar" />
+                                        <img src="@displayPic" class="rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px; object-fit: cover; border: 2px solid var(--indela-primary);" alt="Avatar" />
                                     }
                                     else
                                     {
                                         <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 40px; height: 40px; font-size: 1.2rem;">
-                                            <i class="bi bi-person-fill"></i> <!-- Replaced emoji with Icon -->
+                                            <i class="bi bi-person-fill"></i>
                                         </div>
                                     }
 
@@ -220,7 +226,7 @@
 
     <footer class="footer text-muted mt-5 py-3">
         <div class="container text-center">
-            &copy; 2026 - <strong>iNDLELA</strong> 
+            &copy; 2026 - <strong>iNDLELA</strong>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

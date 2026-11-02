@@ -8,56 +8,90 @@
         <div class="card-body">
             <h3 class="card-title mb-4">Create a New Event</h3>
 
-            <!-- Notice the enctype="multipart/form-data" below! Required for file uploads -->
             <form asp-action="CreateEvent" method="post" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="mb-3">
-                    <label asp-for="Name" class="form-label">Event Name</label>
-                    <input asp-for="Name" class="form-control" required />
+                    <label asp-for="Name" class="form-label fw-bold">Event Name</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Description" class="form-label">Description</label>
+                    <label asp-for="Description" class="form-label fw-bold">Description</label>
                     <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="EventDate" class="form-label">Event Date</label>
-                        <input asp-for="EventDate" type="date" class="form-control" required />
+                        <label asp-for="EventDate" class="form-label fw-bold">Event Date</label>
+                        <input asp-for="EventDate" type="date" class="form-control" />
+                        <span asp-validation-for="EventDate" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="StartTime" class="form-label">Start Time</label>
+                        <label asp-for="StartTime" class="form-label fw-bold">Start Time</label>
                         <input asp-for="StartTime" class="form-control" placeholder="e.g. 06:00" />
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="Location" class="form-label">Location</label>
-                    <input asp-for="Location" class="form-control" required />
+                    <label asp-for="Location" class="form-label fw-bold">Location</label>
+                    <input asp-for="Location" class="form-control" />
+                    <span asp-validation-for="Location" class="text-danger"></span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label asp-for="StartPoint" class="form-label">Start Point</label>
+                        <label asp-for="StartPoint" class="form-label fw-bold">Start Point</label>
                         <input asp-for="StartPoint" class="form-control" />
+                        <span asp-validation-for="StartPoint" class="text-danger"></span>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label asp-for="FinishPoint" class="form-label">Finish Point</label>
+                        <label asp-for="FinishPoint" class="form-label fw-bold">Finish Point</label>
                         <input asp-for="FinishPoint" class="form-control" />
+                        <span asp-validation-for="FinishPoint" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- NEW: Weather Fields -->
+                <h5 class="mt-4 border-bottom pb-2">Weather Forecast (Optional)</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WeatherForecast" class="form-label fw-bold"></label>
+                        <input asp-for="WeatherForecast" class="form-control" placeholder="e.g., Sunny with light clouds" />
+                        <span asp-validation-for="WeatherForecast" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Temperature" class="form-label fw-bold"></label>
+                        <input asp-for="Temperature" class="form-control" placeholder="e.g., 22.5" />
+                        <span asp-validation-for="Temperature" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="WindSpeed" class="form-label fw-bold"></label>
+                        <input asp-for="WindSpeed" class="form-control" placeholder="e.g., 15" />
+                        <span asp-validation-for="WindSpeed" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Precipitation" class="form-label fw-bold"></label>
+                        <input asp-for="Precipitation" class="form-control" placeholder="e.g., 0" />
+                        <span asp-validation-for="Precipitation" class="text-danger"></span>
                     </div>
                 </div>
 
                 <!-- Azure Blob Image Upload -->
-                <div class="mb-3">
-                    <label asp-for="ImageFile" class="form-label">Event Banner Image</label>
+                <div class="mb-3 mt-3">
+                    <label asp-for="ImageFile" class="form-label fw-bold">Event Banner Image</label>
                     <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
                     <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create Event</button>
+                    <button type="submit" class="btn btn-primary px-4">Create Event</button>
                 </div>
             </form>
         </div>

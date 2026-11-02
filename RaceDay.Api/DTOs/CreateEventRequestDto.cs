@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay.DTOs
@@ -28,5 +28,15 @@ namespace RaceDay.DTOs
 
         [StringLength(255)]
         public string? FinishPoint { get; set; }
+
+        // --- ADDED THESE PROPERTIES ---
+        [StringLength(50)]
+        public string? WeatherForecast { get; set; }
+
+        public decimal? Temperature { get; set; }
+
+        public int? WindSpeed { get; set; }
+
+        public int? Precipitation { get; set; }
     }
 }

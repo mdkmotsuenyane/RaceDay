@@ -13,7 +13,6 @@
                 </div>
             }
             
-            <!-- THIS IS THE MISSING ERROR BOX -->
             @if (TempData["Error"] != null)
             {
                 <div class="alert alert-danger alert-dismissible fade show">
@@ -30,9 +29,19 @@
                     
                     <!-- Avatar Section -->
                     <div class="text-center mb-4 position-relative">
-                        @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                        
+                        <!-- FIX APPLIED HERE FOR DOCKER/LOCAL UPLOADS -->
+                        @{
+                            var displayPic = Model.ProfileImageUrl;
+                            if (!string.IsNullOrEmpty(displayPic) && displayPic.StartsWith("/uploads/"))
+                            {
+                                displayPic = $"http://localhost:7100{displayPic}";
+                            }
+                        }
+
+                        @if (!string.IsNullOrEmpty(displayPic))
                         {
-                            <img src="@Model.ProfileImageUrl" class="rounded-circle shadow" style="width: 140px; height: 140px; object-fit: cover;" alt="Avatar" />
+                            <img src="@displayPic" class="rounded-circle shadow" style="width: 140px; height: 140px; object-fit: cover;" alt="Avatar" />
                             
                             <form asp-action="DeleteProfilePicture" method="post" class="mt-2">
                                 @Html.AntiForgeryToken()
