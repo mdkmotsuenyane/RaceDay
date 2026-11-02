@@ -1,13 +1,23 @@
-@{ ViewBag.Title = "Home"; }
+@{
+    ViewBag.Title = "Home";
+}
 
 <div class="text-center mt-5 mb-5 py-5" style="background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%); border-radius: 20px; color: white; box-shadow: 0 15px 30px rgba(0,0,0,0.2);">
     <div class="container py-4">
+
+        <!-- iNDLELA LOGO -->
+        <img src="~/images/logo.png" alt="iNDLELA Logo" class="img-fluid mb-4" style="max-height: 180px;" />
+
         <h1 class="display-3 fw-bold mb-3" style="font-family: 'Montserrat', sans-serif;">
-            Find Your <span style="color: var(--indela-primary);">iNDLELA</span>
+            Find Your
+            <!-- BLACK 'i' with a white outline so it's visible on the dark background -->
+            <span style="color: #000000; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;">i</span><span style="color: var(--indela-primary);">NDLELA</span>
         </h1>
+
         <p class="lead mb-4" style="font-family: 'Inter', sans-serif; font-size: 1.2rem; color: #d1d1d1;">
             The ultimate platform for South African road running, walking, and cycling events.
         </p>
+
         <div class="mt-4">
             <a class="btn btn-primary btn-lg me-3" asp-controller="Events" asp-action="Index">Browse Events</a>
             @if (Context.Session.GetString("JwtToken") == null)
@@ -21,21 +31,30 @@
 <div class="row text-center mt-5">
     <div class="col-md-4 mb-4">
         <div class="card h-100 shadow-sm p-4">
-            <div class="fs-1 mb-3">🏃‍♂️</div>
+            <!-- Replaced emoji with Flag Icon -->
+            <div class="mb-3">
+                <i class="bi bi-flag-fill fs-1" style="color: var(--indela-primary);"></i>
+            </div>
             <h4 class="card-title">Enter Races</h4>
             <p class="text-muted">Register for top South African marathons, ultra-marathons, and cycle tours.</p>
         </div>
     </div>
     <div class="col-md-4 mb-4">
         <div class="card h-100 shadow-sm p-4">
-            <div class="fs-1 mb-3">🏆</div>
+            <!-- Replaced emoji with Trophy/Award Icon -->
+            <div class="mb-3">
+                <i class="bi bi-trophy-fill fs-1" style="color: var(--indela-primary);"></i>
+            </div>
             <h4 class="card-title">Track Results</h4>
             <p class="text-muted">View your personal race history, finish times, and overall placements.</p>
         </div>
     </div>
     <div class="col-md-4 mb-4">
         <div class="card h-100 shadow-sm p-4">
-            <div class="fs-1 mb-3">🌤️</div>
+            <!-- Replaced emoji with Weather Icon -->
+            <div class="mb-3">
+                <i class="bi bi-cloud-sun-fill fs-1" style="color: var(--indela-primary);"></i>
+            </div>
             <h4 class="card-title">Race Day Ready</h4>
             <p class="text-muted">Check live weather forecasts, route maps, and elevation profiles.</p>
         </div>

@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - iNDLELA</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="~/images/logo.png" />
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap Icons (NEW) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -103,9 +109,12 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-4">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    🏃‍♂️ i<span>NDLELA</span>
+                <!-- UPDATED BRAND WITH LOGO -->
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/logo.png" alt="iNDLELA Logo" style="height: 45px; margin-right: 10px;" />
+                    <span>i<span>NDLELA</span></span>
                 </a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -114,26 +123,36 @@
                     <!-- Left Side Links -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                                <i class="bi bi-house-door me-1"></i> Home
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">Browse Events</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Events" asp-action="Index">
+                                <i class="bi bi-calendar-event me-1"></i> Browse Events
+                            </a>
                         </li>
 
                         <!-- Role-Specific Links -->
                         @if (Context.Session.GetString("UserRole") == "Organiser")
                         {
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Organiser" asp-action="Dashboard">My Dashboard</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Organiser" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-1"></i> My Dashboard
+                                </a>
                             </li>
                         }
                         @if (Context.Session.GetString("UserRole") == "Participant")
                         {
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="Dashboard">My Entries</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="Dashboard">
+                                    <i class="bi bi-journal-check me-1"></i> My Entries
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="MyResults">My Results</a>
+                                <a class="nav-link fw-bold" style="color: var(--indela-primary);" asp-controller="Participant" asp-action="MyResults">
+                                    <i class="bi bi-trophy me-1"></i> My Results
+                                </a>
                             </li>
                         }
                     </ul>
@@ -155,7 +174,7 @@
                                     else
                                     {
                                         <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 40px; height: 40px; font-size: 1.2rem;">
-                                            👤
+                                            <i class="bi bi-person-fill"></i> <!-- Replaced emoji with Icon -->
                                         </div>
                                     }
 
@@ -169,17 +188,23 @@
                             <li class="nav-item d-flex align-items-center">
                                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-outline-danger btn-sm" style="border-radius: 50px;">Logout</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" style="border-radius: 50px;">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </button>
                                 </form>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                                </a>
                             </li>
                             <li class="nav-item ms-2">
-                                <a class="btn btn-primary text-white" asp-controller="Account" asp-action="Register">Register</a>
+                                <a class="btn btn-primary text-white" asp-controller="Account" asp-action="Register">
+                                    <i class="bi bi-person-plus me-1"></i> Register
+                                </a>
                             </li>
                         }
                     </ul>
