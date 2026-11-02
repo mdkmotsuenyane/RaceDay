@@ -7,6 +7,7 @@ using RaceDay.Api.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq; // Required for .Any()
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,12 +69,46 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// 6. AUTOMATIC DATABASE MIGRATIONS (CRUCIAL FOR DOCKER)
-// This ensures the database tables are created automatically when the container starts.
+// 6. AUTOMATIC DATABASE MIGRATIONS & SEEDING (CRUCIAL FOR DOCKER)
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<RaceDayDbContext>();
     db.Database.Migrate();
+
+    // SEED DATA IF EMPTY (For Docker environment)
+    if (!db.User.Any())
+    {
+        // 1. Create an Organiser User
+        var user = new RaceDay.Models.User
+        {
+            Email = "organiser@indela.com",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("Password123"),
+            Role = "Organiser",
+            FullName = "iNDLELA Admin",
+            CreatedAt = DateTime.UtcNow
+        };
+        db.User.Add(user);
+        db.SaveChanges();
+
+        // 2. Create the Organiser Profile
+        var org = new RaceDay.Models.Organiser { UserID = user.UserId, Name = "iNDLELA Events", Address = "Cape Town" };
+        db.Organisers.Add(org);
+        db.SaveChanges();
+
+        // 3. Create a Test Event with a real image URL from the web
+        db.Events.Add(new RaceDay.Models.Event
+        {
+            OrganiserID = org.OrganiserID,
+            Name = "Cape Town Marathon 2026",
+            Description = "The ultimate 42.2km scenic route through the Mother City.",
+            EventDate = DateTime.Today.AddDays(30),
+            StartTime = "06:00",
+            Location = "Cape Town Stadium",
+            Status = "Open",
+            ImageUrl = "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=800&q=80"
+        });
+        db.SaveChanges();
+    }
 }
 
 // 7. HTTP Request Pipeline
