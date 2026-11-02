@@ -1,8 +1,9 @@
 # iNDLELA (RaceDay Architecture)
 
-![RaceDay.Api CI](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/api-ci.yml/badge.svg)
-![docs-check](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/docs-check.yml/badge.svg)
-
+![RaceDay CI](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/api-ci.yml/badge.svg)
+![Docker CI](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/docker-ci.yml/badge.svg)
+![CD Publish](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/cd-publish.yml/badge.svg)
+![Docs Check](https://github.com/mdkmotsuenyane/RaceDay/actions/workflows/docs-check.yml/badge.svg)
 
 ---
 
@@ -20,7 +21,27 @@ This repository contains a complete **Full-Stack** solution:
 
 ▶️ **Demo Video Part 2 (API):** [Watch on YouTube](https://youtu.be/mqsA6EGXBHw)
 
-▶️ **Demo Video Part 3 (Front-End & Docker):** Coming soon
+▶️ **Demo Video Part 3 (Front-End & Docker):** (up soon)
+
+---
+
+## 👥 User Roles & Permissions
+
+The system implements strict Role-Based Access Control (RBAC) via JWT (API) and Session Cookies (MVC).
+
+### 1. Organiser
+*   **Dashboard:** View a summary of all created events and total enrolments.
+*   **Event Management:** Create, edit, and delete events. Upload event banner images (Azure Blob Storage) and input weather/route data.
+*   **Category Management:** Create custom race categories (age, distance, gender) for each event.
+*   **Enrolments:** View all participants who have entered their events and update their entry status.
+*   **Results:** Upload finish times and positions for participants after the race.
+
+### 2. Participant
+*   **Event Browsing:** View all upcoming events with search/filtering options.
+*   **Registration:** Enter races by selecting a specific category and pay/confirm their entry.
+*   **My Entries:** View personal registrations and withdraw if necessary.
+*   **My Results:** View personal race history, including finish times and overall placement (e.g., 47th out of 312).
+*   **Profile:** Update personal details and upload a profile picture.
 
 ---
 
@@ -28,11 +49,9 @@ This repository contains a complete **Full-Stack** solution:
 
 | Component | Status |
 | :--- | :---: |
-| Database Design (SQL) | ✅ Complete |
-| ERD | ✅ Complete |
+| Database Design (SQL) & ERD | ✅ Complete |
 | API Endpoint Plan | ✅ Complete |
-| Entity Models (EF Core) | ✅ Complete |
-| Database Migrations | ✅ Complete |
+| Entity Models (EF Core) & Migrations | ✅ Complete |
 | Authentication (JWT & Session) | ✅ Complete |
 | API Controllers Implementation | ✅ Complete |
 | API Unit Tests (xUnit) | ✅ Complete (53 tests) |
@@ -41,19 +60,6 @@ This repository contains a complete **Full-Stack** solution:
 | Azure Blob Storage Integration | ✅ Complete |
 | UI Styling & Theming (iNDLELA) | ✅ Complete |
 | Containerisation (Docker) | ✅ Complete |
-
----
-
-## 🔥 Features Implemented
-
-- **Authentication & Authorisation** – JWT-based API endpoints, with secure Session-based authentication on the MVC front-end.
-- **Role-Based Navigation** – Distinct dashboards and interfaces for Organisers and Participants.
-- **Event Management** – Organisers can create, edit, and delete events, including uploading event banner images.
-- **Category Management** – Create age/distance categories per event.
-- **Registration (Entries)** – Participants can enter events (selecting a category) and withdraw. Organisers can view enrolments.
-- **Results** – Organisers can upload finish times and positions. Participants can view their personal race history and placement.
-- **User Profiles** – Users can update their details and upload profile pictures.
-- **Race Day Prep** – Weather forecasts and route information integrated into event details.
 
 ---
 
@@ -78,7 +84,7 @@ This repository contains a complete **Full-Stack** solution:
 
 ## 🐳 Docker Setup
 
-The application is fully containerised using Docker. Both the API and the MVC front-end, along with a SQL Server database, can be started with a single command.
+The application is fully containerised. The API, MVC front-end, and SQL Server database can be started with a single command.
 
 ### Prerequisites
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) must be installed and running.
@@ -94,7 +100,7 @@ docker compose up --build
 - **iNDLELA Web App:** http://localhost:7159
 - **API Swagger:** http://localhost:7100/swagger
 
-*(Note: The API is configured to automatically apply Entity Framework migrations on startup, so the database schema will be created automatically inside the container. Please allow a few seconds for SQL Server to boot up before the API connects).*
+*(Note: The API automatically applies Entity Framework migrations and seeds test data on startup, ensuring the database is ready immediately).*
 
 ---
 
@@ -103,9 +109,9 @@ docker compose up --build
 This project follows security best practices by **never committing secrets to source control**.
 
 ### How the Storage works
-The `BlobService` is designed with a robust fallback strategy:
-- **Local Development with Azure:** If a valid `AzureStorage:ConnectionString` is provided in `appsettings.Development.json` (which is gitignored) or User Secrets, the application will upload images directly to Azure Blob Storage.
-- **Fallback (No Keys):** If the connection string is missing (e.g., when a marker clones the repo or runs Docker), the application gracefully catches the error and falls back to saving images locally in the `wwwroot/uploads` folder. The UI remains fully functional.
+The `BlobService` is designed with a fallback strategy:
+- **Local Development with Azure:** If a valid `AzureStorage:ConnectionString` is provided in `appsettings.Development.json` (gitignored) or User Secrets, images are uploaded to Azure Blob Storage.
+- **Fallback (No Keys):** If the connection string is missing (e.g., in Docker), the application gracefully falls back to saving images locally in the `wwwroot/uploads` folder.
 
 To test with your own Azure Storage, create an `appsettings.Development.json` in the `RaceDay.Api` folder and add:
 ```json
@@ -158,65 +164,54 @@ Because the MVC app consumes the API, **both projects must run simultaneously**.
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Continuous Integration / Deployment (CI/CD)
 
 The API has **53 passing integration tests** covering all controllers, using `WebApplicationFactory<Program>` and isolated in-memory databases.
 
-Run them with:
+### Automated Workflows
+This repository is equipped with 4 distinct GitHub Actions workflows to ensure code quality and deployment readiness:
+
+1. **API CI (`api-ci.yml`):** Restores, builds, and runs all 53 xUnit tests on every push.
+2. **Docker CI (`docker-ci.yml`):** Validates that both the API and MVC Docker images build successfully.
+3. **CD Publish (`cd-publish.yml`):** Builds and pushes the production Docker images to GitHub Container Registry (ghcr.io).
+4. **Docs Check (`docs-check.yml`):** Verifies that documentation files are present and formatted.
+
+### Successful Build Screenshots
+
+Here is proof of the workflows passing:
+
+**1. API Unit Tests Passing (53 Tests)**
+![API CI](./docs/screenshots/api-ci-success.png)
+
+**2. Docker Build Pipeline Passing**
+![Docker CI](./docs/screenshots/docker-ci-success.png)
+
+**3. Continuous Deployment (Publishing Images)**
+![CD Publish](./docs/screenshots/cd-publish-success.png)
+
+Run tests locally with:
 ```bash
 dotnet test RaceDay.slnx
 ```
 
 ---
 
-## 📁 Project Structure
+## ⏭️ Project Milestones (Completed)
 
-```
-RaceDay/
-├── .github/
-│   └── workflows/            # CI workflows (api-ci.yml, docs-check.yml)
-├── docs/                     # Planning artifacts (API_Plan.pdf, ERD, endpoints.md)
-├── RaceDay.Api/              # ASP.NET Core Web API back-end
-│   ├── Controllers/          # API endpoints
-│   ├── Data/                 # EF Core DbContext
-│   ├── DTOs/                 # Data Transfer Objects
-│   ├── Migrations/           # EF Core migrations
-│   ├── Models/               # Entity classes
-│   ├── Services/             # BlobService (Azure & Local Fallback)
-│   ├── Program.cs
-│   └── appsettings.json
-├── RaceDay.Api.Tests/        # xUnit integration test project (53 tests)
-├── RaceDay.Mvc/              # ASP.NET Core MVC front-end (iNDLELA Brand)
-│   ├── Controllers/          # UI routing and API consumption
-│   ├── Models/               # ViewModels
-│   ├── Services/             # ApiClient (HTTP + JWT forwarding)
-│   ├── Views/                # Razor UI (Custom iNDLELA Theme)
-│   ├── Program.cs
-│   └── appsettings.json
-├── RaceDay.slnx              # Solution file
-├── docker-compose.yml        # Multi-container orchestration
-└── README.md
-```
+1. ~~Implement JWT Authentication (API).~~ ✅
+2. ~~Build all API controllers matching the plan.~~ ✅
+3. ~~Write unit/integration tests for API endpoints.~~ ✅
+4. ~~Build the MVC front-end that consumes the API.~~ ✅
+5. ~~Integrate Azure Blob Storage for image uploads.~~ ✅
+6. ~~Polish UI with custom Bootstrap theme (iNDLELA).~~ ✅
+7. ~~Containerise the application with Docker.~~ ✅
 
 ---
 
-## ⚙️ Continuous Integration
-
-Two GitHub Actions workflows run on every push to `main`:
-- **`docs-check.yml`** – verifies that documentation stays in sync.
-- **`api-ci.yml`** – restores, builds, and runs all 53 tests against the API.
-
-[View workflows](https://github.com/mdkmotsuenyane/RaceDay/actions)
-
----
-
-## 📃 License
+## 📃 License & Contributors
 
 This project is built for educational purposes as part of the PROG6212 module for Rosebank International.
 
----
+## ✍🏾 Author
 
-## ✍🏾 Contributors
-
-- Mokadi Motsuenyane – ST10480772 Group 3
-```
+- Mokadi Motsuenyane
