@@ -26,6 +26,9 @@ services:
     depends_on:
       - db
 
+    volumes:
+      - ./RaceDay.Api/wwwroot/uploads:/app/wwwroot/uploads
+
   raceday-mvc:
     image: raceday-mvc
     build:
